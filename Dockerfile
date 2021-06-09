@@ -1,9 +1,20 @@
 FROM python:3.9.5
 
-ENV PYTHONUNBUFFERED 1
+USER root
+# ENV PYTHONUNBUFFERED 1
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1
 
-COPY ./requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
+WORKDIR /
+RUN wget -q https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
+RUN python get-poetry.py -y
+# RUN source /root/.poetry/env
+ENV PATH = "${PATH}:/root/.poetry/bin"
+COPY poetry.lock poetry.lock
+COPY pyproject.toml pyproject.toml
+RUN poetry install
+RUN poetry show
 
 RUN mkdir /app
 WORKDIR /app
