@@ -1,25 +1,40 @@
-version: "3"
+version: '3'
 
 services:
-  app:
-    image: address_change_api
-    build:
-      context: .
-    container_name: address_change_api
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./app:/app
-    command: poetry run gunicorn app.wsgi:application --bind 0.0.0.0:8000
-    # sh -c "python manage.py runserver 0.0.0.0:8000"
+    app:
+        image: address_change_api
+        env_file:
+            - ./django_config/djangoenv
+        build:
+            context: .
+        container_name: address_change_api
+        ports:
+            - '8000:8000'
+        volumes:
+            - ./app:/app
+        command: poetry run gunicorn app.wsgi:application --bind 0.0.0.0:8000
+        # sh -c "python manage.py runserver 0.0.0.0:8000"
+        depends_on:
+            - mysql
 
-  nginx:
-    image: nginx:latest # nginx 서비스에서 사용할 도커 이미지
-    container_name: web_server
-    ports:
-      - "80:80"
-    volumes:
-      - ./app:/app
-      - ./config/nginx:/etc/nginx/conf.d
-    depends_on: # 서비스 간의 종속성 표현
-      - app
+    nginx:
+        image: nginx:latest # nginx 서비스에서 사용할 도커 이미지
+        container_name: web_server
+        ports:
+            - '80:80'
+        volumes:
+            - ./app:/app
+            - ./config/nginx:/etc/nginx/conf.d
+        depends_on: # 서비스 간의 종속성 표현
+            - app
+
+    mysql:
+        image: mysql
+        container_name: mysql_service
+        env_file:
+            - ./mysql_docker_config/envs/mysqlenv
+        volumes:
+            - ./mysql_docker_config/volumes-mysql/mysql/:/var/lib/mysql/
+        command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+        ports:
+            - '3306:3306'
