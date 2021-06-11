@@ -16,6 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from django.conf.urls import include
+from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
+    path('address/', include('address.urls')),
+    path('todo/', include('todo.urls')),
+    path('', RedirectView.as_view(url="/todo/", permanent=True)),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
