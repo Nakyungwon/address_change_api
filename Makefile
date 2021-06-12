@@ -12,3 +12,6 @@ bash:
 
 web_bash:
 	docker container exec -it web_server bash
+
+db_bash:
+	docker container exec -it mysql_service bash

@@ -31,6 +31,8 @@ services:
     mysql:
         image: mysql
         container_name: mysql_service
+        cap_add:
+            - SYS_NICE
         env_file:
             - ./mysql_docker_config/envs/mysqlenv
         volumes:
