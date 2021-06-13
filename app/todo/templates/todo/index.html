@@ -1,0 +1,27 @@
+{% load static %}
+<html lang="en">
+    {% load bootstrap4 %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table class='table'>
+        <tbody>
+            {% if todo_list %}
+            {% for todo in todo_list %}
+            <tr>
+                <td>{{ todo.fields.task }}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr><td colspan="3">게시물이 없습니다.</td></tr>
+            {% endif %}
+            </tbody>
+    </table>
+</body>
+</html>
+
+
