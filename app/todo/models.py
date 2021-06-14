@@ -10,6 +10,7 @@ class Todo(models.Model):
     # t_task = models.CharField(max_length=100)
     user_id = models.CharField(max_length=100, null=True)
     task = models.TextField(null=True)
+    do_yn = models.IntegerField(default=0, null=False)
     highlight = models.IntegerField(default=0, null=False)
     created_at = models.DateTimeField(
         auto_now_add=True, null=True, blank=True)  # 해당 레코드 생성시 현재 시간 자동저장

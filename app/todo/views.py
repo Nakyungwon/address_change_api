@@ -33,6 +33,22 @@ def selectAll(request):
         return render(request, 'todo/index.html', {'todo_list': json.loads(serializers_todo_list)})
 
 
+def BootStrap(request):
+    return render(request, 'todo/base.html')
+
+
+def Do(request):
+    pk = request.POST.get('pk', None)
+    do_yn = request.POST.get('do_yn', None)
+
+    todo_obj = Todo.objects.get(id=pk)
+    todo_obj.do_yn = 1 if do_yn == 'true' else 0
+    todo_obj.save()
+
+    context = {
+        'do': "yes"
+    }
+    return HttpResponse(json.dumps(context), content_type='application/json')
 # def selectOne(request, id):
 #     todo_list = Todo.objects.filter(id=id)
 #     print(todo_list)

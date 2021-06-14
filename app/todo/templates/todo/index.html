@@ -1,27 +1,86 @@
-{% load static %}
-<html lang="en">
-    {% load bootstrap4 %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% bootstrap_messages %}
+<!-- <html zlang="en"> -->
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>To-Do</title>
+    <style>
+        body{
+            margin: 0;
+            font-family: var(--bs-font-sans-serif);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .todo_check{
+            float: right
+        }
+        #app{
+            position: relative
+        }
+        .container{
+            position: relative;
+            top: 50%;
+        }
+    </style>
+    
 </head>
-<body>
-    <table class='table'>
-        <tbody>
-            {% if todo_list %}
-            {% for todo in todo_list %}
-            <tr>
-                <td>{{ todo.fields.task }}</td>
-            </tr>
-            {% endfor %}
-            {% else %}
-            <tr><td colspan="3">게시물이 없습니다.</td></tr>
-            {% endif %}
-            </tbody>
-    </table>
+<body id="app">
+    {% block content %}
+    <div class="container">
+        <table class='table'>
+            <tbody>
+                {% if todo_list %}
+                {% for todo in todo_list %}
+                <tr>
+                    <td>{{ todo.fields.task }} <input onchange="test( {{todo.pk}}, this.checked )" class="todo_check" type="checkbox" {% if todo.fields.do_yn == 1 %} checked {% else %} {% endif %} /></td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr><td colspan="3">게시물이 없습니다.</td></tr>
+                {% endif %}
+                </tbody>
+        </table>
+    </div>
+    {% endblock %}
 </body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+        // $(".todo_check").change(function(){
+            
+        // })
+        console.log({'csrfmiddlewaretoken': '{{ csrf_token }}'})
+        function test(pk, is_checked){
+            $.ajax({
+                type: "POST", // 데이터를 전송하는 방법을 지정한다.
+                url: "{% url 'do' %}", // 통신할 url을 지정한다.
+                data: {'pk': pk, 'do_yn':is_checked, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, // 서버로 데이터를 전송할 때 이 옵션을 사용한다.
+                dataType: "json", // 서버측에서 전송한 데이터를 어떤 형식의 데이터로서 해석할 것인가를 지정한다. 없으면 알아서 판단한다.
+                // 서버측에서 전송한 데이터 views.py like 메소드
+                // context = {'likes_count' : memo.total_likes, 'message' : message}
+                // json.dump(context)를 통해서 json 형식으로 전달된다.
+
+                success: function(response){ // 성공했을 때 호출할 콜백을 지정한다.
+                    // alert(response.do)
+                    // id = $(this).attr('name')
+                    // $('#count'+ pk).html("count : "+ response.likes_count);
+                    // alert(response.message);
+                    // alert("좋아요수 :" + response.likes_count);
+                },
+                error:function(request,status,error){
+                    // alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                }
+            })
+        }
+</script>
 </html>
 
 
