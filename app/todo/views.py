@@ -5,6 +5,7 @@ from django.core import serializers
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.http import QueryDict
 import json
 
 
@@ -24,43 +25,65 @@ import json
 #     def delete(self, request):
 #         return HttpResponse("delete 요청")
 
+# def BootStrap(request):
+# return render(request, 'todo/base.html')
 
 # @method_decorator(csrf_exempt, name='dispatch')
 def selectAll(request):
     if request.method == 'GET':
-        todo_list = Todo.objects.all().order_by('created_at')
-        serializers_todo_list = serializers.serialize("json", todo_list)
-        return render(request, 'todo/index.html', {'todo_list': json.loads(serializers_todo_list)})
+        # todo_list = Todo.objects.all().order_by('created_at')
+        # serializers_todo_list = serializers.serialize("json", todo_list)
+        return render(request, 'todo/index.html', {'todo_list': getAllTask()})
 
 
-def BootStrap(request):
-    return render(request, 'todo/base.html')
+def getAllTask() -> list:
+    todo_list = Todo.objects.all().order_by('-created_at')
+    serializers_todo_list = serializers.serialize("json", todo_list)
+    return json.loads(serializers_todo_list)
 
 
 def Do(request):
-    pk = request.POST.get('pk', None)
-    do_yn = request.POST.get('do_yn', None)
+    if request.method == 'POST':
+        post = QueryDict(request.body)
+        task = post.get('task')
+        todo_obj = Todo()
+        todo_obj.task = task
+        todo_obj.user_id = 'saecomaster1'
+        todo_obj.save()
 
-    todo_obj = Todo.objects.get(id=pk)
-    todo_obj.do_yn = 1 if do_yn == 'true' else 0
-    todo_obj.save()
+        return HttpResponse(json.dumps(getAllTask()), content_type='application/json')
+    if request.method == 'PUT':
+        put = QueryDict(request.body)
+        pk = put.get('pk', None)
+        do_yn = put.get('do_yn', None)
 
-    context = {
-        'do': "yes"
-    }
-    return HttpResponse(json.dumps(context), content_type='application/json')
-# def selectOne(request, id):
-#     todo_list = Todo.objects.filter(id=id)
-#     print(todo_list)
-#     serializers_todo_list = serializers.serialize("json", todo_list)
-#     return JsonResponse({'todo_list': serializers_todo_list})
+        todo_obj = Todo.objects.get(id=pk)
+        todo_obj.do_yn = 1 if do_yn == 'true' else 0
+        todo_obj.save()
 
+        list = getAllTask()
+        print(list)
 
-# def insert(request):
-#     todo = Todo(user_id='saeco', task='장고 꽤 어렵네', highlight=1)
-#     todo.save()
-#     return JsonResponse({'msg': '성공'})
+        return HttpResponse(json.dumps(getAllTask()), content_type='application/json')
+    if request.method == 'DELETE':
+        put = QueryDict(request.body)
+        pk = put.get('pk', None)
+        todo_obj = Todo.objects.get(id=pk)
+        todo_obj.delete()
+        context = {
+            'do': "yes"
+        }
+        return HttpResponse(json.dumps(getAllTask()), content_type='application/json')
+        # def selectOne(request, id):
+        #     todo_list = Todo.objects.filter(id=id)
+        #     print(todo_list)
+        #     serializers_todo_list = serializers.serialize("json", todo_list)
+        #     return JsonResponse({'todo_list': serializers_todo_list})
 
+        # def insert(request):
+        #     todo = Todo(user_id='saeco', task='장고 꽤 어렵네', highlight=1)
+        #     todo.save()
+        #     return JsonResponse({'msg': '성공'})
 
-# def delete(request):
-#     pass
+        # def delete(request):
+        #     pass
