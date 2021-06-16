@@ -38,8 +38,13 @@ def selectAll(request):
 
 def getAllTask() -> list:
     todo_list = Todo.objects.all().order_by('-created_at')
+    # todo_list = Todo.objects.values_list(
+    #     'task', 'do_yn', 'pk').order_by('-created_at')
+    print(todo_list)
     serializers_todo_list = serializers.serialize("json", todo_list)
     return json.loads(serializers_todo_list)
+    # <QuerySet [('장고 너무 어렵당', 0, 13), ('123', 0, 12), ('asdasdasd', 0, 11), ('sdfsdfdsf', 0, 10), ('asdasdsad', 0, 9), ('asdasdsads', 0, 8)]>
+    # <QuerySet [<Todo: 장고 너무 어렵당>, <Todo: 123>, <Todo: asdasdasd>, <Todo: sdfsdfdsf>, <Todo: asdasdsad>, <Todo: asdasdsads>]>
 
 
 def Do(request):
@@ -74,16 +79,3 @@ def Do(request):
             'do': "yes"
         }
         return HttpResponse(json.dumps(getAllTask()), content_type='application/json')
-        # def selectOne(request, id):
-        #     todo_list = Todo.objects.filter(id=id)
-        #     print(todo_list)
-        #     serializers_todo_list = serializers.serialize("json", todo_list)
-        #     return JsonResponse({'todo_list': serializers_todo_list})
-
-        # def insert(request):
-        #     todo = Todo(user_id='saeco', task='장고 꽤 어렵네', highlight=1)
-        #     todo.save()
-        #     return JsonResponse({'msg': '성공'})
-
-        # def delete(request):
-        #     pass

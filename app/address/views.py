@@ -7,4 +7,4 @@ def index(req):
     context = {
 
     }
-    return render(req, "index.html", context=context)
+    return render(req, "address/index.html", context=context)

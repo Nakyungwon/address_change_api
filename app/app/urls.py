@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('address/', include('address.urls')),
-    path('todo/', include('todo.urls')),
-    path('', RedirectView.as_view(url="/todo/", permanent=True)),
+    path('address_migration/', include('address.urls')),
+    # path('todo/', include('todo.urls')),
+    path('', RedirectView.as_view(url="/address_migration")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,123 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% bootstrap_messages %}
+<!-- <html zlang="en"> -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Migration</title>
+    <style>
+        body{
+            margin: 0;
+            font-family: var(--bs-font-sans-serif);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .todo_check{
+            float: right
+        }
+        .float_right{
+            float: right
+        }
+        #app{
+            position: relative
+        }
+        .container{
+            position: relative;
+            top: 20%;
+        }
+        .row {
+            margin-bottom: 10px;
+        }
+    </style>
+    
+</head>
+<body id="app">
+    {% block content %}
+    <div class="container">
+        <div class="row">
+            <label for="exampleInputEmail1">공통계정</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="commonId" placeholder="공통ID">
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="commonPassword" placeholder="공통비번">
+            </div>
+        </div>
+        <div class="row">
+            <label for="exampleInputEmail1">주소</label>
+            <div class="input-group mb-3">
+                <input type="text" name="" id="postcode" class="form-control postcodify_postcode5" value="" />
+                <button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
+            </div>
+            
+            <div class="input-group mb-3">
+                <input type="text" name="" id="address" class="form-control postcodify_address" value="" /><br />
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" name="" id="details" class="form-control postcodify_details" value="" /><br />
+            </div>
+            {% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
+            
+        </div>
+        <div class="row align-items-center">
+            <div class="col">
+                <select class="form-control" id="vendor">
+                    <option value="service">쿠팡</option>
+                </select>
+            </div>
+            <div class="col">
+                <input type="email" class="form-control" placeholder="Enter email">
+            </div>
+            <div class="col">
+                <input type="email" class="form-control" placeholder="Enter email">
+            </div>
+            <div class="col">
+                <button class="btn btn-primary form-control">바꾸기</button>
+            </div>
+        </div>
+    </div>
+    
+    {% endblock %}
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="//d1p7wdleee1q2z.cloudfront.net/post/search.min.js"></script>
+<script type="text/javascript">
+    {% comment %} function openAddressPopup(){ {% endcomment %}
+        /*var url = location.href
+        var confmKey = "devU01TX0FVVEgyMDIxMDYxNzAwNDIyMDExMTI5MTE="
+        var resultType = '4'
+        var inputYn = "<?=ADDR['inputYn']?>"
+        if(inputYn != "Y"){
+            document.form.confmKey.value = confmKey;
+            document.form.returnUrl.value = url;
+            document.form.resultType.value = resultType;
+            document.form.action.value = "http://www.juso.go.kr/addrlink/addrLinkUrl.do";
+            document.form.submit()
+        } else {
+            opener.jusoCallBack("<?=$ADDR[roadFullAddr]?>", "<?=$ADDR[roadAddrPart1]?>", "<?=$ADDR[addrDetail]?>")
+            window.close()
+        } */
+        
+    {% comment %} } {% endcomment %}
+    $(function() {
+        $("#postcodify_search_button").postcodifyPopUp( {
+            forceDisplayPostcode5 : true,
+            insertPostcode5 : "#postcode",
+            insertAddress : "#address",
+            insertDetails : "#details",
+            insertExtraInfo : "#extra_info",
+            hideOldAddresses : false
+        } );
+    })
+</script>
+</html>
+
+
