@@ -12,6 +12,9 @@ pytz = "2021.1"
 django-cors-headers = "3.7.0"
 PyMySQL = "^1.0.2"
 django-bootstrap4 = "^3.0.1"
+selenium = "^3.141.0"
+flake8 = "^3.9.2"
+autopep8 = "^1.5.7"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.5.7"
