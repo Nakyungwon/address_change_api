@@ -5,15 +5,15 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
 
 
 def input_value(driver, x_path, value):
     input_x_path = driver.find_element_by_xpath(x_path)
-    driver.execute_script(
-        f"arguments[0].setAttribute('value', '{value}')",
-        input_x_path)
-    driver.implicitly_wait(3)
-
+    input_x_path.send_keys(value)
+    input_x_path.getAttribute("value")
+    time.sleep(0.3)
 
 # def enter_input(driver, x_path):
 #     driver.find_element_by_xpath(x_path).send_keys(Key.RETURN)
@@ -36,15 +36,14 @@ options.addArguments(
 driver = webdriver.Chrome(executable_path=chromedriver, chrome_options=options)
 driver.delete_all_cookies()
 driver.implicitly_wait(3)
-# url = "https://login.coupang.com/login/login.pang?rtnUrl=https%3A%2F%2Fwww.coupang.com%2Fnp%2Fpost%2Flogin%3Fr%3Dhttps%253A%252F%252Fwww.coupang.com%252F"
-# url = 'https://www.coupang.com/'
-# url = "https://login.coupang.com/login/login.pang"
-# url = "https://front.wemakeprice.com/user/login"
 url = 'https://my.musinsa.com/login/v1/login?&referer=http%3A%2F%2Fwww.musinsa.com%2Findex.php%3F'
 address_url = "https://store.musinsa.com/app/delivery/lists/app/delivery/lists"
 
 
 driver.get(url)
+user_agent = driver.executeScript("return navigator.userAgent;")
+print(user_agent)
+
 driver.implicitly_wait(3)
 driver.execute_script(
     "Object.defineProperty(navigator, 'plugins', {get: function() {return[1, 2, 3, 4, 5]}})")
@@ -75,7 +74,6 @@ new_address_x_path = '/html/body/div[1]/a'
 driver.find_element_by_xpath(new_address_x_path).click()
 driver.implicitly_wait(3)
 
-time.sleep(1)
 driver.switch_to.window(driver.window_handles[1])
 # 수령인
 recipient_x_path = '/html/body/form/div/table/tbody/tr[1]/td/input'
@@ -102,7 +100,7 @@ default_address_check = '/html/body/form/div/table/tbody/tr[5]/td/div[1]/button'
 driver.find_element_by_xpath(default_address_check).click()
 
 time.sleep(1)
-driver.switch_to.window(driver.window_handles[2])
+driver.switch_to.window(driver.window_handles[-1])
 driver.switch_to.frame(
     driver.find_element_by_tag_name("iframe"))
 driver.switch_to.frame(
@@ -113,6 +111,39 @@ address_search = os.environ['test_address']
 element_id.send_keys(address_search)
 element_id.send_keys(Keys.RETURN)
 
+html = driver.page_source
+soup = BeautifulSoup(html, 'html.parser')
+ul = soup.select_one('ul.list_post')
+titles = ul.select('li')
+index = 0
+for idx, title in enumerate(titles):
+    search_address_list = title.attrs['data-addr'].split()
+    my_address_search_list = address_search.split()
 
-address_x_path = '/html/body/form/div/table/tbody/tr[5]/td/div[1]/button'
-driver.find_element_by_xpath(address_x_path).click()
+    if my_address_search_list[-1] == search_address_list[-1] and my_address_search_list[-2] == search_address_list[-2]:
+        index = idx
+
+    # print(title.attrs('data-addr'))
+index += 1
+driver.find_element_by_xpath(
+    f'/html/body/div[1]/div/div[2]/ul/li[{index}]/dl/dd[1]/span/button/span[1]').click()
+
+driver.switch_to.window(driver.window_handles[1])
+detail_address = '305호'
+detail_address_x_path = '/html/body/form/div/table/tbody/tr[5]/td/input[2]'
+input_value(driver, detail_address_x_path, detail_address)
+
+driver.switch_to.window(driver.window_handles[1])
+default_address = '/html/body/form/div/table/tbody/tr[5]/td/div[2]/input'
+driver.find_element_by_xpath(default_address).click()
+
+# 기본 배송지 설정 click
+driver.execute_script(
+    "document.getElementById('delivery_defaultCheck').click();")
+driver.execute_script(
+    "document.getElementById('checkTelNone').click();"
+)
+
+driver.current_url
+register_button = '/html/body/form/div/div/button[2]'
+driver.find_element_by_xpath(register_button).click()

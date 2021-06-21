@@ -15,6 +15,7 @@ django-bootstrap4 = "^3.0.1"
 selenium = "^3.141.0"
 flake8 = "^3.9.2"
 autopep8 = "^1.5.7"
+beautifulsoup4 = "^4.9.3"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.5.7"

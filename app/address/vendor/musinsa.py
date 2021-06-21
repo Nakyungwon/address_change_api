@@ -12,7 +12,7 @@ import time
 # import common
 
 
-class coupang(Base):
+class Musinsa(Base):
     url = 'https://login.coupang.com/login/login.pang'
 
     # def __init__(self):
@@ -39,6 +39,6 @@ class coupang(Base):
 
 
 if __name__ == '__main__':
-    obj = coupang()
+    obj = Musinsa()
     # common.test()
     obj.run()
