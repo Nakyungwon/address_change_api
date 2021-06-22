@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 def input_value(driver, x_path, value):
     input_x_path = driver.find_element_by_xpath(x_path)
     input_x_path.send_keys(value)
-    input_x_path.getAttribute("value")
+    print(input_x_path.getAttribute("value"))
     time.sleep(0.3)
 
 # def enter_input(driver, x_path):
@@ -26,13 +26,13 @@ options = webdriver.ChromeOptions()
 options.add_argument('lang=ko_KR')
 options.add_argument('window-size=1920x1080')
 options.add_argument("--disable-gpu")
-options.addArguments("--profile-directory=Default")
-options.addArguments("--whitelisted-ips")
-options.addArguments("--start-maximized")
-options.addArguments("--disable-extensions")
-options.addArguments("--disable-plugins-discovery")
-options.addArguments(
-    "user-data-dir=/Users/kyungwonna/Library/Application Support/Google/Chrome")
+options.add_argument("--profile-directory=Default")
+options.add_argument("--whitelisted-ips")
+options.add_argument("--start-maximized")
+options.add_argument("--disable-extensions")
+options.add_argument("--disable-plugins-discovery")
+# options.addArguments(
+#     "user-data-dir=/Users/kyungwonna/Library/Application Support/Google/Chrome")
 driver = webdriver.Chrome(executable_path=chromedriver, chrome_options=options)
 driver.delete_all_cookies()
 driver.implicitly_wait(3)
@@ -41,16 +41,16 @@ address_url = "https://store.musinsa.com/app/delivery/lists/app/delivery/lists"
 
 
 driver.get(url)
-user_agent = driver.executeScript("return navigator.userAgent;")
-print(user_agent)
+# user_agent = driver.executeScript("return navigator.userAgent;")
+# print(user_agent)
 
 driver.implicitly_wait(3)
-driver.execute_script(
-    "Object.defineProperty(navigator, 'plugins', {get: function() {return[1, 2, 3, 4, 5]}})")
-driver.execute_script(
-    "Object.defineProperty(navigator, 'languages', {get: function() {return ['ko-KR', 'ko']}})")
-driver.execute_script(
-    "const getParameter = WebGLRenderingContext.getParameter;WebGLRenderingContext.prototype.getParameter = function(parameter) {if (parameter === 37445) {return 'NVIDIA Corporation'} if (parameter === 37446) {return 'NVIDIA GeForce GTX 980 Ti OpenGL Engine';}return getParameter(parameter);};")
+# driver.execute_script(
+#     "Object.defineProperty(navigator, 'plugins', {get: function() {return[1, 2, 3, 4, 5]}})")
+# driver.execute_script(
+#     "Object.defineProperty(navigator, 'languages', \{get: function() \{return ['ko-KR', 'ko']\}\})")
+# driver.execute_script(
+#     "const getParameter = WebGLRenderingContext.getParameter;WebGLRenderingContext.prototype.getParameter = function(parameter) {if (parameter === 37445) {return 'NVIDIA Corporation'} if (parameter === 37446) {return 'NVIDIA GeForce GTX 980 Ti OpenGL Engine';}return getParameter(parameter);};")
 
 time.sleep(1)
 # id_input = driver.find_element_by_xpath(id_x_path)

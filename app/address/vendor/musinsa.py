@@ -1,44 +1,36 @@
-# import platform
-# from selenium import webdriver
-
-# if platform.system() == 'Darwin':
-#     chromedriver = '/usr/local/bin/chromedriver'
-
-# driver = webdriver.Chrome(chromedriver)
-
-# driver.get('https://www.coupang.com/')
 from base import Base
-import time
-# import common
+import helper
 
 
 class Musinsa(Base):
-    url = 'https://login.coupang.com/login/login.pang'
+    url = 'https://my.musinsa.com/login/v1/login?&referer=http%3A%2F%2Fwww.musinsa.com%2Findex.php%3F'
+    id_x_path = '/html/body/div/div/form/input[2]'
+    password_x_path = '/html/body/div/div/form/input[3]'
+    login_button_x_path = '/html/body/div/div/form/button'
 
-    # def __init__(self):
-    # url = 'https://www.coupang.com/'
+    address_url = 'https://store.musinsa.com/app/delivery/lists/app/delivery/lists'
 
-    # def run(self):
-    # self.open_site()
-    def login_click(self):
-        time.sleep(5)
-        # self.driver.find_element_by_xpath('//a[@class="login"]').click()
-        # self.driver.find_element_by_xpath('//a[@class="login"]').click()
+    def __init__(self, id, password, address, address_detail):
+        self.id = id
+        self.password = password
+        self.address = address
+        self.address_detail = address_detail
 
-        input = self.driver.find_element_by_xpath(
-            '/html/body/div[1]/div/div/form/div[1]/div[1]/div[1]/label/span[2]/input')
-        self.driver.execute_script(
-            "arguments[0].setAttribute('value', 'new value!')", input)
-
-        # self.driver.find_element_by_xpath('//login-password-input'
-        # self.driver.find_element_by_xpath('//button[@class="login__button login__button - -submit _loginSubmitButton"]').click()
+    @helper.delay
+    def login(self):
+        self.input_value(self.id_x_path, self.id)
+        self.input_value(self.password_x_path, self.password)
+        pass
 
     def run(self):
         self.open_site()
-        self.login_click()
+        self.login()
 
 
-if __name__ == '__main__':
-    obj = Musinsa()
-    # common.test()
+if __name__ == "__main__":
+    import os
+    id = os.environ['test_id']
+    password = os.environ['test_password']
+    address = os.environ['test_address']
+    obj = Musinsa(id, password, address, '305호')
     obj.run()
