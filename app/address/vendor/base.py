@@ -31,6 +31,11 @@ class Base(ABC):
     def open_site(cls):
         Base.driver.get(cls.url)
 
+    @classmethod
+    @helper.delay
+    def open_address_page(cls):
+        Base.driver.get(cls.address_url)
+
     @retry(stop=stop_after_attempt(3))
     def input_value(self, x_path, value):
         x_path_element = self.driver.find_element_by_xpath(x_path)
@@ -44,6 +49,10 @@ class Base(ABC):
     def confirm_input_value(self, element):
         value = element.get_attribute('value')
         return value
+
+    def click_button(self, x_path):
+        self.driver.find_element_by_xpath(x_path).click()
+        return self.driver.current_url
 
     def set_dummy_javascript(self):
         self.driver.implicitly_wait(3)
