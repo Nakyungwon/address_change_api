@@ -8,3 +8,10 @@ def index(req):
 
     }
     return render(req, "address/index.html", context=context)
+
+
+def render_login(req):
+    context = {
+
+    }
+    return render(req, "address/login.html", context=context)

@@ -44,50 +44,6 @@
 <body id="app">
     {% block content %}
     <div class="container">
-            <div class="row">
-                <label for="exampleInputEmail1">공통계정</label>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="commonId" placeholder="공통ID">
-                </div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="commonPassword" placeholder="공통비번">
-                </div>
-            </div>
-            <div class="row">
-                <label for="exampleInputEmail1">주소</label>
-                <div class="input-group mb-3">
-                    <input type="text" name="" id="postcode" class="form-control postcodify_postcode5" value="" />
-                    <button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
-                </div>
-                
-                <div class="input-group mb-3">
-                    <input type="text" name="" id="address" class="form-control postcodify_address" value="" /><br />
-                </div>
-                <div class="input-group mb-3">
-                    <input type="text" name="" id="details" class="form-control postcodify_details" value="" /><br />
-                </div>
-                {% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
-                
-            </div>
-            <div class="row align-items-center">
-                <div class="col">
-                    <select class="form-control" id="vendor">
-                        <option value="service">쿠팡</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <input type="email" class="form-control" placeholder="Enter email">
-                </div>
-                <div class="col">
-                    <input type="email" class="form-control" placeholder="Enter email">
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary form-control">바꾸기</button>
-                </div>
-        </div>
-    </div>
-
-    <div class="container">
         <div class="row">
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
             <div class="card card-signin my-5">

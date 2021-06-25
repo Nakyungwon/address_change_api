@@ -1,7 +1,9 @@
 from django.contrib import admin
-from address.models import Address
-from address.models import Service
+from address.models import User
+from address.models import RequestVendor
+from address.models import Vendor
 
-admin.site.register(Address)
-admin.site.register(Service)
+admin.site.register(User)
+admin.site.register(RequestVendor)
+admin.site.register(Vendor)
 # Register your models here.
