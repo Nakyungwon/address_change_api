@@ -1,4 +1,5 @@
 from base import Base
+from stragy import StragyVendor
 import helper
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys

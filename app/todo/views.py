@@ -69,7 +69,7 @@ def Do(request):
         list = getAllTask()
         print(list)
 
-        return HttpResponse(json.dumps(getAllTask()), content_type='application/json')
+        return HttpResponse(≈getAllTask()), content_type='application/json')
     if request.method == 'DELETE':
         put = QueryDict(request.body)
         pk = put.get('pk', None)

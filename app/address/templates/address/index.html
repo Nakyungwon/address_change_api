@@ -44,7 +44,10 @@
 <body id="app">
     {% block content %}
     <div class="container">
-            <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-10 mx-auto">
+    		<div class="card card-signin my-5">
+    			<div class="card-body">
+            {% comment %} <di class="row">
                 <label for="exampleInputEmail1">공통계정</label>
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" id="commonId" placeholder="공통ID">
@@ -52,44 +55,54 @@
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" id="commonPassword" placeholder="공통비번">
                 </div>
-            </div>
-            <div class="row">
-                <label for="exampleInputEmail1">주소</label>
-                <div class="input-group mb-3">
-                    <input type="text" name="" id="postcode" class="form-control postcodify_postcode5" value="" />
-                    <button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
-                </div>
-                
-                <div class="input-group mb-3">
-                    <input type="text" name="" id="address" class="form-control postcodify_address" value="" /><br />
-                </div>
-                <div class="input-group mb-3">
-                    <input type="text" name="" id="details" class="form-control postcodify_details" value="" /><br />
-                </div>
-                {% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
-                
-            </div>
-            <div class="row align-items-center">
-                <div class="col">
-                    <select class="form-control" id="vendor">
-                        <option value="service">쿠팡</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <input type="email" class="form-control" placeholder="Enter email">
-                </div>
-                <div class="col">
-                    <input type="email" class="form-control" placeholder="Enter email">
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary form-control">바꾸기</button>
-                </div>
+            </di> {% endcomment %}
+						<div class="row">
+							<label for="exampleInputEmail1">주소</label>
+							<div class="input-group mb-3">
+								<input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="06540" />
+								<button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
+							</div>
+							
+							<div class="input-group mb-3">
+								<input type="text" id="address" class="form-control postcodify_address" value="서울특별시 서초구 주흥길 14" /><br />
+							</div>
+							<div class="input-group mb-3">
+								<input type="text" id="details" class="form-control postcodify_details" value="305호" /><br />
+							</div>
+							{% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
+							
+						</div>
+						<div class="row">
+							<button class="btn btn-primary" id="add_vendor"> + 추가 </button>
+						</div> 
+						<div id="vendor_area">
+							<form name="addressform">
+								<div class="row align-items-center">
+									<div class="col">
+										<select class="form-control" name="vendor">
+											<option value="musinsa">무신사</option>
+										</select>
+									</div>
+									<div class="col">
+										<input type="text" class="form-control" name="vendor_id" placeholder="ID" value="saecomaster">
+									</div>
+									<div class="col">
+										<input type="password" class="form-control" name="vendor_password" placeholder="password" value="sksmssk12!">
+									</div>
+									<div class="col">
+										<button class="btn btn-primary form-control" onclick="changeAddress()">바꾸기</button>
+									</div>
+								</div>
+							</form>
+						</div>
+        		</div>
+        	</div>
         </div>
     </div>
 
     <div class="container">
         <div class="row">
-        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="col-sm-9 col-md-7 col-lg-10 mx-auto">
             <div class="card card-signin my-5">
             <div class="card-body">
                 <h5 class="card-title text-center">Sign In</h5>
@@ -150,7 +163,57 @@
             insertExtraInfo : "#extra_info",
             hideOldAddresses : false
         } );
+
+        $('#add_vendor').click(function(){
+			var row_str = ''
+			row_str += '<div class="row align-items-center">'
+           	row_str += '	<div class="col">'
+			row_str += '		<select class="form-control" name="vendor">'
+			row_str += '			<option value="service">쿠팡</option>'
+			row_str += '		</select>'
+			row_str += '	</div>'
+			row_str += '	<div class="col">'
+			row_str += '		<input type="text" class="form-control" placeholder="ID">'
+			row_str += '	</div>'
+			row_str += '	<div class="col">'
+			row_str += '		<input type="password" class="form-control" placeholder="password">'
+			row_str += '	</div>'
+			row_str += '	<div class="col">'
+			row_str += '		<button class="btn btn-primary form-control">바꾸기</button>'
+			row_str += '	</div>'
+			row_str += '</div>'
+
+			var origin_html = $("#vendor_area").html()
+			console.log(origin_html)
+			console.log(row_str)
+			$("#vendor_area").html(origin_html + row_str)
+        })
     })
+	function changeAddress(){
+        event.preventDefault();
+		var queryString = $("form[name=addressform]").serialize();
+        var postcode = $("#postcode").val()
+        var address = $("#address").val()
+        var details = $("#details").val()
+		console.log(queryString+'&postcode='+postcode+'&address='+address+'&details='+details)
+        queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details 
+        $.ajax({
+            type : 'post',
+            url: "{% url 'address' %}",
+            beforeSend : function(xhr){
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            },
+            data : queryString,
+            dataType : 'json',
+            error: function(xhr, status, error){
+                alert(error);
+            },
+            success : function(json){
+                alert(json)
+            }
+        });
+	}
 </script>
 </html>
 
