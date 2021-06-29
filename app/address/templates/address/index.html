@@ -38,13 +38,17 @@
         .row {
             margin-bottom: 10px;
         }
+        .text-vertical-center {
+            display: flex;
+            align-items: center;
+        }
     </style>
     
 </head>
 <body id="app">
     {% block content %}
     <div class="container">
-        <div class="col-sm-9 col-md-7 col-lg-10 mx-auto">
+        <div class="col-sm-14 col-md-10 col-lg-10 mx-auto">
     		<div class="card card-signin my-5">
     			<div class="card-body">
             {% comment %} <di class="row">
@@ -56,12 +60,12 @@
                     <input type="text" class="form-control" id="commonPassword" placeholder="공통비번">
                 </div>
             </di> {% endcomment %}
-						<div class="row">
-							<label for="exampleInputEmail1">주소</label>
-							<div class="input-group mb-3">
+						<div class="form-row">
+                            <label for="exampleInputEmail1">주소</label>
+                            <div class="input-group mb-3 ">
 								<input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="06540" />
 								<button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
-							</div>
+                            </div>
 							
 							<div class="input-group mb-3">
 								<input type="text" id="address" class="form-control postcodify_address" value="서울특별시 서초구 주흥길 14" /><br />
@@ -69,12 +73,49 @@
 							<div class="input-group mb-3">
 								<input type="text" id="details" class="form-control postcodify_details" value="305호" /><br />
 							</div>
+
+                            {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
+                            <div class="row">
+                                <div class="col">
+                                    <label for="inputPassword3">수취인</label>
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="recipient" id="recipient"  value="나경원">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="inputPassword3">수신지(선택)</label>
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="우리집">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <label for="inputPassword3">전화번호</label>    
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="010">
+                                        </div>
+                                        <span class="text-vertical-center">-</span>
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="9044">
+                                        </div>
+                                        <span class="text-vertical-center">-</span>
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="8972">
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>
 							{% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
-							
+                            <div class="row">
+                            <div    class="col input-group mb-3">
+                                <button class="btn btn-primary form-control" id="add_vendor"> + 추가 </button>
+                            </div> 
+                            </div>
 						</div>
-						<div class="row">
-							<button class="btn btn-primary" id="add_vendor"> + 추가 </button>
-						</div> 
 						<div id="vendor_area">
 							<form name="addressform">
 								<div class="row align-items-center">
@@ -195,8 +236,13 @@
         var postcode = $("#postcode").val()
         var address = $("#address").val()
         var details = $("#details").val()
-		console.log(queryString+'&postcode='+postcode+'&address='+address+'&details='+details)
-        queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details 
+        var recipient = $("#recipient").val()
+        var shipping_address = $("#shipping_address").val()
+        var phone_number_head = $("#phone_number_head").val()
+        var phone_number_middle = $("#phone_number_middle").val()
+        var phone_number_tail = $("#phone_number_tail").val()
+        queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details+'&recipient='+recipient+'&shipping_address='+shipping_address+'&phone_number_head='+phone_number_head+'&phone_number_middle='+phone_number_middle+'&phone_number_tail='+phone_number_tail
+        console.log(queryString)
         $.ajax({
             type : 'post',
             url: "{% url 'address' %}",

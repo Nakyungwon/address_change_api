@@ -1,6 +1,6 @@
-from base import Base
-from stragy import StragyVendor
-import helper
+from .base import Base
+from .helper import delay
+from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
 
@@ -24,6 +24,12 @@ class Musinsa(Base):
             phon_number_middle,
             phon_number_tail,
     ):
+        super().__init__(self.url, self.address_url)
+        # print(self.driver)
+        self.driver = webdriver.Chrome(
+            executable_path=Base.chromedriver,
+            chrome_options=Base.options)
+        self.driver.delete_all_cookies()
         self.id = id
         self.password = password
         self.address = address
@@ -34,20 +40,20 @@ class Musinsa(Base):
         self.phon_number_middle = phon_number_middle
         self.phon_number_tail = phon_number_tail
 
-    @helper.delay
+    @delay
     def login(self):
         self.input_value(self.id_x_path, self.id)
         self.input_value(self.password_x_path, self.password)
         url = self.click_button(self.login_button_x_path)
         assert url == 'https://www.musinsa.com/index.php'
 
-    @helper.delay
+    @delay
     def open_search_address(self):
         default_address_check = '/html/body/form/div/table/tbody/tr[5]/td/div[1]/button'
         url = self.click_button(default_address_check)
         assert url == 'https://store.musinsa.com/app/mypage/delivery_form'
 
-    @helper.delay
+    @delay
     def search_address(self):
         self.driver.switch_to.window(self.driver.window_handles[-1])
         self.driver.switch_to.frame(
@@ -59,7 +65,7 @@ class Musinsa(Base):
         element_id.send_keys(self.address)
         element_id.send_keys(Keys.RETURN)
 
-    @helper.delay
+    @delay
     def select_address(self):
         html = self.driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
@@ -79,7 +85,7 @@ class Musinsa(Base):
         self.click_button(
             f'/html/body/div[1]/div/div[2]/ul/li[{index}]/dl/dd[1]/span/button/span[1]')
 
-    @helper.delay
+    @delay
     def change_address_base_step(self):
         new_address_x_path = '/html/body/div[1]/a'
         self.click_button(new_address_x_path)
@@ -121,19 +127,19 @@ class Musinsa(Base):
         self.change_address_last_step()
 
 
-if __name__ == "__main__":
-    import os
-    id = os.environ['test_id']
-    password = os.environ['test_password']
-    address = os.environ['test_address']
-    obj = Musinsa(
-        id,
-        password,
-        address,
-        '305호',
-        '나경원',
-        '우리집',
-        '010',
-        '9044',
-        '8972')
-    obj.run()
+# if __name__ == "__main__":
+#     import os
+#     id = os.environ['test_id']
+#     password = os.environ['test_password']
+#     address = os.environ['test_address']
+#     obj = Musinsa(
+#         id,
+#         password,
+#         address,
+#         '305호',
+#         '나경원',
+#         '우리집',
+#         '010',
+#         '9044',
+#         '8972')
+#     obj.run()

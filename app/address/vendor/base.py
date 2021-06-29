@@ -2,7 +2,7 @@ import platform
 from tenacity import retry, stop_after_attempt
 from selenium import webdriver
 from abc import ABC, abstractmethod
-import helper
+from .helper import delay
 
 
 class Base(ABC):
@@ -21,20 +21,24 @@ class Base(ABC):
     options.add_argument("--start-maximized")
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-plugins-discovery")
-    driver = webdriver.Chrome(
-        executable_path=chromedriver,
-        chrome_options=options)
-    driver.delete_all_cookies()
 
-    @classmethod
-    @helper.delay
-    def open_site(cls):
-        Base.driver.get(cls.url)
+    def __init__(self, url, address_url):
+        self.url
+        self.address_url
+        self.driver = webdriver.Chrome(
+            executable_path=Base.chromedriver,
+            chrome_options=Base.options)
+        self.driver.delete_all_cookies()
 
-    @classmethod
-    @helper.delay
-    def open_address_page(cls):
-        Base.driver.get(cls.address_url)
+    # @classmethod
+    @delay
+    def open_site(self):
+        self.driver.get(self.url)
+
+    # @classmethod
+    @delay
+    def open_address_page(self):
+        self.driver.get(self.address_url)
 
     @retry(stop=stop_after_attempt(3))
     def input_value(self, x_path, value):
@@ -45,7 +49,7 @@ class Base(ABC):
         else:
             return value
 
-    @helper.delay
+    @delay
     def confirm_input_value(self, element):
         value = element.get_attribute('value')
         return value
