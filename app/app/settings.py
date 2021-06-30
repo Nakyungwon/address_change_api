@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'address.apps.AddressConfig',
     'todo.apps.TodoConfig',
-    'bootstrap4'
+    'bootstrap4',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,13 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
     # BASE_DIR / "static",
 )
+
+ASGI_APPLICATION = 'address.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
