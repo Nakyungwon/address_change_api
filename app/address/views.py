@@ -7,14 +7,25 @@ from django.http import QueryDict, HttpResponse, JsonResponse
 # from .models import RequestVendor
 import json
 from .vendor.stragy import *
+from django.utils.safestring import mark_safe
 # Create your views here.
+
+
+def room(request, room_name):
+    return render(request, 'address/index.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
 
 
 def index(req):
     context = {
 
     }
-    return render(req, "address/index.html", context=context)
+    room_name = 'abc'
+    return render(req,
+                  "address/index.html",
+                  {"context": context,
+                   'room_name_json': mark_safe(json.dumps(room_name))})
 
 
 def render_login(req):

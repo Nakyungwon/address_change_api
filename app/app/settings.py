@@ -137,12 +137,16 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+ROOT_DIR = os.path.dirname(BASE_DIR)
+
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
     # BASE_DIR / "static",
 )
 
-ASGI_APPLICATION = 'address.routing.application'
+ASGI_APPLICATION = 'app.routing.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',

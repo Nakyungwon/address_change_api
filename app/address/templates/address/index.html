@@ -63,15 +63,15 @@
 						<div class="form-row">
                             <label for="exampleInputEmail1">주소</label>
                             <div class="input-group mb-3 ">
-								<input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="06540" />
+								<input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="" />
 								<button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
                             </div>
 							
 							<div class="input-group mb-3">
-								<input type="text" id="address" class="form-control postcodify_address" value="서울특별시 서초구 주흥길 14" /><br />
+								<input type="text" id="address" class="form-control postcodify_address" value="" /><br />
 							</div>
 							<div class="input-group mb-3">
-								<input type="text" id="details" class="form-control postcodify_details" value="305호" /><br />
+								<input type="text" id="details" class="form-control postcodify_details" value="" /><br />
 							</div>
 
                             {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
@@ -96,15 +96,15 @@
                                     <label for="inputPassword3">전화번호</label>    
                                     <div class="input-group mb-3 row">
                                         <div class="col">
-                                            <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="010">
+                                            <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="">
                                         </div>
                                         <span class="text-vertical-center">-</span>
                                         <div class="col">
-                                            <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="9044">
+                                            <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="">
                                         </div>
                                         <span class="text-vertical-center">-</span>
                                         <div class="col">
-                                            <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="8972">
+                                            <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="">
                                         </div>
                                     </div>
                                 </div>  
@@ -125,20 +125,29 @@
 										</select>
 									</div>
 									<div class="col">
-										<input type="text" class="form-control" name="vendor_id" placeholder="ID" value="saecomaster">
+										<input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">
 									</div>
 									<div class="col">
-										<input type="password" class="form-control" name="vendor_password" placeholder="password" value="sksmssk12!">
+										<input type="password" class="form-control" name="vendor_password" placeholder="password" value="">
 									</div>
 									<div class="col">
-										<button class="btn btn-primary form-control" onclick="changeAddress()">바꾸기</button>
+										<button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>
 									</div>
 								</div>
+                                <div>
+                                    <div>message</div>
+                                </div>
 							</form>
 						</div>
         		</div>
         	</div>
         </div>
+    </div>
+
+    <div class="container">
+        <button onclick=websoket()>소켓 연결</button>
+        <button onclick=socketMessage()>소켓 메시지</button>
+        <button onclick=socketDisconnect()>소켓 해제</button>
     </div>
 
     <div class="container">
@@ -195,6 +204,60 @@
         } */
         
     {% comment %} } {% endcomment %}
+    var socket = null
+
+    function websoket(){
+        /*var ws_schema = window.location.protocol == "https:" ? "wss": "ws"
+        var ws_path = ws_schema + "://" + window.location.host + "/sockettest/";
+        console.log("Connecting to" + ws_path)*/
+        var roomName = {{ room_name_json }}
+        if ('WebSocket' in window) {
+            //var socket = new WebSocket(ws_path, 'echo')
+            //var socket = new WebSocket(ws_path)
+            socket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/')
+
+            socket.onopen = function(msg){
+                console.log('-------open-----')
+                console.log(msg)
+                console.log('----------------')
+            };
+            socket.onclose = function(msg){
+                console.log('-------disconnect-----')
+                console.log(msg)
+                console.log('----------------')
+            };         
+            socket.onerror = function(msg){
+                console.log('-------error-----')
+                console.log(msg)
+                console.log('----------------')
+            };
+            socket.onmessage = function(e) {
+                var data = JSON.parse(e.data);
+                var message = data['message'];
+                //document.querySelector('#chat-log').value += (message + '\n');
+                console.log(message)
+            };
+            
+            // 웹소켓이 연결되었을때
+            /*socket.onopen = function () {
+                for (var i = 0; i < 10; i++) {
+                    socket.send('Hello ' + i);
+                }
+            };*/
+        } else {
+            console.log('웹소켓 없음')
+        }        
+    }
+
+    function socketMessage(){
+        socket.send(JSON.stringify({
+            'message': 'hihihihi'
+        }));
+    }
+
+    function socketDisconnect(){
+        socket.destroy()
+    }
     $(function() {
         $("#postcodify_search_button").postcodifyPopUp( {
             forceDisplayPostcode5 : true,
@@ -207,32 +270,48 @@
 
         $('#add_vendor').click(function(){
 			var row_str = ''
-			row_str += '<div class="row align-items-center">'
-           	row_str += '	<div class="col">'
-			row_str += '		<select class="form-control" name="vendor">'
-			row_str += '			<option value="service">쿠팡</option>'
-			row_str += '		</select>'
-			row_str += '	</div>'
-			row_str += '	<div class="col">'
-			row_str += '		<input type="text" class="form-control" placeholder="ID">'
-			row_str += '	</div>'
-			row_str += '	<div class="col">'
-			row_str += '		<input type="password" class="form-control" placeholder="password">'
-			row_str += '	</div>'
-			row_str += '	<div class="col">'
-			row_str += '		<button class="btn btn-primary form-control">바꾸기</button>'
-			row_str += '	</div>'
-			row_str += '</div>'
+			row_str += '<form name="addressform">'
+            row_str += '    <div class="row align-items-center">'
+            row_str += '        <div class="col">'
+            row_str += '            <select class="form-control" name="vendor">'
+            row_str += '                <option value="musinsa">무신사</option>'
+            row_str += '            </select>'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="">'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
+            row_str += '        </div>'
+            row_str += '    </div>'
+            row_str += '    <div>'
+            row_str += '        <div>message</div>'
+            row_str += '    </div>'
+            row_str += '</form>'
 
 			var origin_html = $("#vendor_area").html()
-			console.log(origin_html)
+			//console.log(origin_html)
 			console.log(row_str)
-			$("#vendor_area").html(origin_html + row_str)
+			//$("#vendor_area").html(origin_html + row_str)
+            $("#vendor_area").append(row_str)
         })
     })
-	function changeAddress(){
-        event.preventDefault();
-		var queryString = $("form[name=addressform]").serialize();
+	function changeAddress(obj){
+        
+        objForm= obj.closest('form[name=addressform]')
+        formIndex = 0
+        var addressFormList = $("form[name=addressform]")
+
+        for(var i = 0; i < addressFormList.length; i ++){
+            if (objForm == addressFormList[i]){
+                formIndex = i
+                break
+            }
+        }
+		var queryString = addressFormList.eq(formIndex).serialize();
         var postcode = $("#postcode").val()
         var address = $("#address").val()
         var details = $("#details").val()
@@ -243,7 +322,7 @@
         var phone_number_tail = $("#phone_number_tail").val()
         queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details+'&recipient='+recipient+'&shipping_address='+shipping_address+'&phone_number_head='+phone_number_head+'&phone_number_middle='+phone_number_middle+'&phone_number_tail='+phone_number_tail
         console.log(queryString)
-        $.ajax({
+        /*$.ajax({
             type : 'post',
             url: "{% url 'address' %}",
             beforeSend : function(xhr){
@@ -258,7 +337,7 @@
             success : function(json){
                 alert(json)
             }
-        });
+        });*/
 	}
 </script>
 </html>
