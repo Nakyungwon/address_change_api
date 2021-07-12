@@ -33,7 +33,11 @@ class Base(ABC):
     # @classmethod
     @delay
     def open_site(self):
-        self.driver.get(self.url)
+        try:
+            self.driver.get(self.url)
+            return True, '사이트 진입'
+        except Exception:
+            return False, '사이트 진입 실패'
 
     # @classmethod
     @delay
@@ -41,10 +45,13 @@ class Base(ABC):
         self.driver.get(self.address_url)
 
     @retry(stop=stop_after_attempt(3))
-    def input_value(self, x_path, value):
+    def input_value(self, x_path, value, is_reset=False, is_confirm=True):
         x_path_element = self.driver.find_element_by_xpath(x_path)
+        if is_reset:
+            x_path_element.clear()
         x_path_element.send_keys(value)
-        if self.confirm_input_value(x_path_element) != value:
+        if is_confirm and self.confirm_input_value(x_path_element) != value:
+            print('값이 달라 재시도')
             raise
         else:
             return value
@@ -55,6 +62,10 @@ class Base(ABC):
         return value
 
     def click_button(self, x_path):
+        self.driver.find_element_by_xpath(x_path).click()
+        return self.driver.current_url
+    
+    def get_tag_value(self, x_path):
         self.driver.find_element_by_xpath(x_path).click()
         return self.driver.current_url
 

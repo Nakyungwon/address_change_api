@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {% load bootstrap4 %}
 {% bootstrap_css %}
 {% bootstrap_javascript jquery='full' %}
@@ -19,8 +20,8 @@
             line-height: 1.5;
             color: #212529;
             background-color: #fff;
-            -webkit-text-size-adjust: 100%;
-            -webkit-tap-highlight-color: transparent;
+            {% comment %} -webkit-text-size-adjust: 100%; {% endcomment %}
+            {% comment %} -webkit-tap-highlight-color: transparent; {% endcomment %}
         }
         .todo_check{
             float: right
@@ -42,11 +43,42 @@
             display: flex;
             align-items: center;
         }
+        .navbar-expand-lg .navbar-nav {
+            flex-direction: row;
+        }
+        .navbar-expand-lg .navbar-nav .nav-link {
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+        }
+        .nav-link{
+            color: white;
+            font-weight: bold;
+        }
+        .navbar-nav .nav-item + .nav-item {
+            margin-left: 1rem;
+            color: #fff;
+        }
     </style>
     
 </head>
 <body id="app">
     {% block content %}
+    <div class="container">
+        <div class="col-sm-14 col-md-10 col-lg-10 mx-auto">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                {% comment %} <div class="navbar-collapse collapse"> {% endcomment %}
+                    <ul class="navbar-nav align-items-center mr-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="#">sign in</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="{% url 'signup' %}">sign up</a>
+                        </li>
+                    </ul>
+                {% comment %} </div> {% endcomment %}
+            </nav>
+        </div>
+    </div>
     <div class="container">
         <div class="col-sm-14 col-md-10 col-lg-10 mx-auto">
     		<div class="card card-signin my-5">
@@ -71,7 +103,7 @@
 								<input type="text" id="address" class="form-control postcodify_address" value="" /><br />
 							</div>
 							<div class="input-group mb-3">
-								<input type="text" id="details" class="form-control postcodify_details" value="" /><br />
+								<input type="text" id="address_detail" class="form-control postcodify_details" value="" /><br />
 							</div>
 
                             {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
@@ -80,7 +112,7 @@
                                     <label for="inputPassword3">수취인</label>
                                     <div class="input-group mb-3 row">
                                         <div class="col">
-                                            <input type="text" class="form-control" name="recipient" id="recipient"  value="나경원">
+                                            <input type="text" class="form-control" name="recipient" id="recipient"  value="">
                                         </div>
                                     </div>
                                 </div>
@@ -88,7 +120,7 @@
                                     <label for="inputPassword3">수신지(선택)</label>
                                     <div class="input-group mb-3 row">
                                         <div class="col">
-                                            <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="우리집">
+                                            <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="">
                                         </div>
                                     </div>
                                 </div>
@@ -122,6 +154,7 @@
 									<div class="col">
 										<select class="form-control" name="vendor">
 											<option value="musinsa">무신사</option>
+                                            <option value="auction">옥션</option>
 										</select>
 									</div>
 									<div class="col">
@@ -134,8 +167,9 @@
 										<button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>
 									</div>
 								</div>
-                                <div>
-                                    <div>message</div>
+                                <div class="tracking">
+                                    {% comment %} <div class="text-danger">message</div> {% endcomment %}
+                                    <span><span>
                                 </div>
 							</form>
 						</div>
@@ -150,7 +184,7 @@
         <button onclick=socketDisconnect()>소켓 해제</button>
     </div>
 
-    <div class="container">
+    {% comment %} <div class="container">
         <div class="row">
         <div class="col-sm-9 col-md-7 col-lg-10 mx-auto">
             <div class="card card-signin my-5">
@@ -180,7 +214,7 @@
             </div>
         </div>
         </div>
-    </div>
+    </div> {% endcomment %}
     
     {% endblock %}
 </body>
@@ -214,7 +248,8 @@
         if ('WebSocket' in window) {
             //var socket = new WebSocket(ws_path, 'echo')
             //var socket = new WebSocket(ws_path)
-            socket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/')
+            //socket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/')
+            socket = new WebSocket('ws://' + window.location.host + '/ws/vendor/')
 
             socket.onopen = function(msg){
                 console.log('-------open-----')
@@ -234,8 +269,19 @@
             socket.onmessage = function(e) {
                 var data = JSON.parse(e.data);
                 var message = data['message'];
+                var status = data['status'];
+                var index = data['index']
                 //document.querySelector('#chat-log').value += (message + '\n');
-                console.log(message)
+                console.log(message + ' , ' + status)
+                var text_obj = $(".tracking").eq(index).children("span")
+                if (status) {
+                    text_obj.removeClass('text-danger')
+                    text_obj.addClass('text-primary')
+                } else {
+                    text_obj.removeClass('text-primary')
+                    text_obj.addClass('text-danger')
+                }
+                text_obj.text(message)
             };
             
             // 웹소켓이 연결되었을때
@@ -249,14 +295,8 @@
         }        
     }
 
-    function socketMessage(){
-        socket.send(JSON.stringify({
-            'message': 'hihihihi'
-        }));
-    }
-
     function socketDisconnect(){
-        socket.destroy()
+        socket.close()
     }
     $(function() {
         $("#postcodify_search_button").postcodifyPopUp( {
@@ -300,7 +340,6 @@
         })
     })
 	function changeAddress(obj){
-        
         objForm= obj.closest('form[name=addressform]')
         formIndex = 0
         var addressFormList = $("form[name=addressform]")
@@ -311,17 +350,44 @@
                 break
             }
         }
-		var queryString = addressFormList.eq(formIndex).serialize();
-        var postcode = $("#postcode").val()
+        var object = {};
+		var formData = addressFormList.eq(formIndex).serializeArray();
+        formData.forEach(function(value, key){
+            object[value['name']] = value['value'];
+        });
+        /*var postcode = $("#postcode").val()
         var address = $("#address").val()
-        var details = $("#details").val()
+        var details = $("#address_detail").val()
         var recipient = $("#recipient").val()
         var shipping_address = $("#shipping_address").val()
         var phone_number_head = $("#phone_number_head").val()
         var phone_number_middle = $("#phone_number_middle").val()
-        var phone_number_tail = $("#phone_number_tail").val()
-        queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details+'&recipient='+recipient+'&shipping_address='+shipping_address+'&phone_number_head='+phone_number_head+'&phone_number_middle='+phone_number_middle+'&phone_number_tail='+phone_number_tail
-        console.log(queryString)
+        var phone_number_tail = $("#phone_number_tail").val()*/
+
+        object['postcode'] = $("#postcode").val()
+        object['address'] = $("#address").val()
+        object['address_detail'] = $("#address_detail").val()
+        object['recipient'] = $("#recipient").val()
+        object['shipping_address'] = $("#shipping_address").val()
+        object['phone_number_head'] = $("#phone_number_head").val()
+        object['phone_number_middle'] = $("#phone_number_middle").val()
+        object['phone_number_tail'] = $("#phone_number_tail").val()
+        //object['vendor'] = 'musinsa'
+        object['index'] = formIndex
+        json_str_obj = JSON.stringify({
+            object
+        })
+
+        console.log(json_str_obj)
+        
+        //queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details+'&recipient='+recipient+'&shipping_address='+shipping_address+'&phone_number_head='+phone_number_head+'&phone_number_middle='+phone_number_middle+'&phone_number_tail='+phone_number_tail
+        //console.log(queryString)
+        /*socket.send(JSON.stringify({
+            
+            'vendor': 'musinsa'
+        }));*/
+        //socket.send(queryString)
+        socket.send(json_str_obj);
         /*$.ajax({
             type : 'post',
             url: "{% url 'address' %}",

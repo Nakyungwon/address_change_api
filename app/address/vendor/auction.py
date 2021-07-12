@@ -1,16 +1,18 @@
-from .base import Base
-from .helper import delay
-from selenium import webdriver
-from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from .helper import delay
+from .base import Base
+from tenacity import retry, stop_after_attempt
+import time
 
 
-class Musinsa(Base):
-    url = 'https://my.musinsa.com/login/v1/login?&referer=http%3A%2F%2Fwww.musinsa.com%2Findex.php%3F'
-    address_url = 'https://store.musinsa.com/app/delivery/lists/app/delivery/lists'
-    id_x_path = '/html/body/div/div/form/input[2]'
-    password_x_path = '/html/body/div/div/form/input[3]'
-    login_button_x_path = '/html/body/div/div/form/button'
+class Auction(Base):
+    url = 'https://memberssl.auction.co.kr/Authenticate'
+    address_url = 'https://memberssl.auction.co.kr/AddressBook/AddAddressBook.aspx'
+    id_x_path = '/html/body/div[2]/div/div/form/div/div/div/div[1]/fieldset/ul/li[1]/input'
+    password_x_path = '/html/body/div[2]/div/div/form/div/div/div/div[1]/fieldset/ul/li[2]/input'
+    login_button_x_path = '/html/body/div[2]/div/div/form/div/div/div/div[1]/fieldset/button[1]'
 
     def __init__(
             self,
@@ -45,76 +47,83 @@ class Musinsa(Base):
     def login(self):
         self.input_value(self.id_x_path, self.vendor_id)
         self.input_value(self.password_x_path, self.vendor_password)
-        url = self.click_button(self.login_button_x_path)
-        assert url == 'https://www.musinsa.com/index.php'
+        self.click_button(self.login_button_x_path)
+        # assert url == 'https://www.musinsa.com/index.php'
 
     @delay
     def open_search_address(self):
-        default_address_check = '/html/body/form/div/table/tbody/tr[5]/td/div[1]/button'
-        url = self.click_button(default_address_check)
-        assert url == 'https://store.musinsa.com/app/mypage/delivery_form'
+        default_address_check = '/html/body/form/div[3]/div/div/section/div[1]/div[5]/button'
+        self.click_button(default_address_check)
+        # assert url == 'https://store.musinsa.com/app/mypage/delivery_form'
 
     @delay
     def search_address(self):
-        self.driver.switch_to.window(self.driver.window_handles[-1])
-        self.driver.switch_to.frame(
-            self.driver.find_element_by_tag_name("iframe"))
+        # self.driver.switch_to.window(self.driver.window_handles[-1])
         self.driver.switch_to.frame(
             self.driver.find_element_by_tag_name("iframe"))
         # address_search_x_path = '//*[@id="region_name"]'
-        element_id = self.driver.find_element_by_id("region_name")
-        element_id.send_keys(self.address)
-        element_id.send_keys(Keys.RETURN)
+        address_search_x_path = '/html/body/div[2]/div/div/div/div[1]/div[1]/div[1]/form/input'
+        self.input_value(address_search_x_path, self.address)
+        self.input_value(address_search_x_path, Keys.RETURN, is_confirm=False)
+
+    # @retry(stop=stop_after_attempt(3))
+    @delay
+    def get_tag_value(self, count=0):
+        html = self.driver.page_source
+        soup = BeautifulSoup(html, 'html.parser')
+        ul = soup.select_one('ul.lst_search')
+        titles = ul.select('li.list_item')
+        if len(titles) == 0 and count < 4:
+            count += 1
+            time.sleep(3)
+            print(titles)
+            return self.get_tag_value(count)
+        else:
+            return titles
 
     @delay
     def select_address(self):
-        html = self.driver.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-        ul = soup.select_one('ul.list_post')
-        titles = ul.select('li')
         index = 0
+        titles = self.get_tag_value()
 
         my_address_search_list = self.address.split()
         for idx, title in enumerate(titles):
-            search_address_list = title.attrs['data-addr'].split()
+            search_address_list = title.select_one(
+                'p.tx_addr').get_text().split()
             if my_address_search_list[-1] == search_address_list[-1] and my_address_search_list[-2] == search_address_list[-2]:
                 index = idx
                 break
-
-            # print(title.attrs('data-addr'))
         index += 1
         self.click_button(
-            f'/html/body/div[1]/div/div[2]/ul/li[{index}]/dl/dd[1]/span/button/span[1]')
+            f'/html/body/div[2]/div/div/div/div[1]/div[6]/div/ul/li[{index}]/a[2]')
+        self.driver.implicitly_wait(5)
+        self.driver.find_element_by_css_selector("a.btn_set").click()
 
     @delay
     def change_address_base_step(self):
-        new_address_x_path = '/html/body/div[1]/a'
-        self.click_button(new_address_x_path)
+        # new_address_x_path = '/html/body/div[1]/a'
+        # self.click_button(new_address_x_path)
 
         self.driver.switch_to.window(self.driver.window_handles[-1])
-
-        recipient_x_path = '/html/body/form/div/table/tbody/tr[1]/td/input'
-        self.input_value(recipient_x_path, self.recipient)
-        shipping_address_x_path = '/html/body/form/div/table/tbody/tr[2]/td/input'
-        self.input_value(shipping_address_x_path, self.shipping_address)
-        phone_number_head_x_path = '/html/body/form/div/table/tbody/tr[3]/td/input[1]'
-        self.input_value(phone_number_head_x_path, self.phone_number_head)
-        phone_number_middle_x_path = '/html/body/form/div/table/tbody/tr[3]/td/input[2]'
-        self.input_value(phone_number_middle_x_path, self.phone_number_middle)
-        phone_number_tail_x_path = '/html/body/form/div/table/tbody/tr[3]/td/input[3]'
-        self.input_value(phone_number_tail_x_path, self.phone_number_tail)
-        # 기본 배송지 설정 click
-        self.driver.execute_script(
-            "document.getElementById('delivery_defaultCheck').click();")
-        # 전화번호 없음
-        self.driver.execute_script(
-            "document.getElementById('checkTelNone').click();")
+        recipient_x_path = '/html/body/form/div[3]/div/div/section/div[1]/div[3]/div[2]/input'
+        self.input_value(recipient_x_path, self.recipient, is_reset=True)
+        shipping_address_x_path = '/html/body/form/div[3]/div/div/section/div[1]/div[2]/div[2]/input'
+        self.input_value(
+            shipping_address_x_path,
+            self.shipping_address,
+            is_reset=True)
+        phon_number_x_path = '/html/body/form/div[3]/div/div/section/div[1]/div[4]/div[2]/input'
+        self.input_value(
+            phon_number_x_path,
+            self.phone_number_head + '-' +
+            self.phone_number_middle + '-' +
+            self.phone_number_tail)
 
     def change_address_last_step(self):
-        detail_address_x_path = '/html/body/form/div/table/tbody/tr[5]/td/input[2]'
+        detail_address_x_path = '/html/body/form/div[3]/div/div/section/div[1]/div[6]/div[2]/input'
         self.driver.switch_to.window(self.driver.window_handles[-1])
         self.input_value(detail_address_x_path, self.address_detail)
-        register_button = '/html/body/form/div/div/button[2]'
+        register_button = '/html/body/form/div[3]/div/div/section/div[2]/button[2]'
         self.click_button(register_button)
 
     def execute_login_page(self):

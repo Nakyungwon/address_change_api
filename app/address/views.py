@@ -28,6 +28,13 @@ def index(req):
                    'room_name_json': mark_safe(json.dumps(room_name))})
 
 
+def render_signup(req):
+    context = {
+
+    }
+    return render(req, "address/signup.html", context=context)
+
+
 def render_login(req):
     context = {
 
