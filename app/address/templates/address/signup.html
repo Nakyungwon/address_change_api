@@ -45,34 +45,36 @@
     {% block content %}
     <div class="container">
         <div class="row">
-        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-            <div class="card card-signin my-5">
-            <div class="card-body">
-                <h5 class="card-title text-center">Sign Up</h5>
-                <form class="form-signin">
-                <div class="form-label-group">
-                    <input type="text" id="user_id" class="form-control" placeholder="User Id" required>
-                    <div class="invalid-feedback">
-                    </div>
-                    <label for="user_id">User Id</label>
-                </div>
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Sign Up</h5>
+                        <form class="form-signin" method="post" action="{% url 'signup' %}">
+                            {% csrf_token %}
+                            <div class="form-label-group">
+                                <input type="text" id="user_id" class="form-control" name="user_id" placeholder="ID" required>
+                                <div class="invalid-feedback">
+                                </div>
+                                <label for="user_id">ID</label>
+                            </div>
 
-                <div class="form-label-group">
-                    <input type="password" id="user_password" class="form-control" placeholder="Password" required>
-                    <div class="invalid-feedback">
+                            <div class="form-label-group">
+                                <input type="password" id="user_password" class="form-control" name="user_password" placeholder="Password" required>
+                                <div class="invalid-feedback">
+                                </div>
+                                <label for="user_password">Password</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="password" id="re_user_password" class="form-control" placeholder="Confirm Password" required>
+                                <div class="invalid-feedback">
+                                </div>
+                                <label for="re_user_password">Confirm Password</label>
+                            </div>
+                            <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" id="signup">Sign Up</button>
+                        </form>
                     </div>
-                    <label for="user_password">Password</label>
                 </div>
-                <div class="form-label-group">
-                    <input type="password" id="re_user_password" class="form-control" placeholder="Confirm Password" required>
-                    <div class="invalid-feedback">
-                    </div>
-                    <label for="re_user_password">Confirm Password</label>
-                </div>
-                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" id="signup">Sign Up</button>
             </div>
-            </div>
-        </div>
         </div>
     </div>
     
@@ -84,40 +86,46 @@
     $(function() {
         $("#signup").click(function (){
             var htmlStr = ""
-            var user_id= $("#user_id").val()
+            var user_id_obj= $("#user_id")
+            var user_id = user_id_obj.val()
+            var regType1 = /^[A-Za-z0-9+]*$/;
             if (user_id.length < 5){
-                $("#user_id").removeClass('is-valid')
-                $("#user_id").addClass('is-invalid')
-                $("#user_id").next().text('아이디는 5자 이상이여야 합니다.')
+                InvalidInput(user_id_obj, '아이디는 5자 이상이여야 합니다.')
                 return 
-            }else{
-                $("#user_id").addClass('is-valid')
-                $("#user_id").removeClass('is-invalid')
+            } else if(!regType1.test(user_id)){
+                InvalidInput(user_id_obj, '아이디는 영문 숫자만 가능 합니다.')
+                return
+            }else {
+                ValidInput(user_id_obj)
             }
-            var user_password= $("#user_password").val()
+            var user_password_obj= $("#user_password")
+            var user_password = user_password_obj.val()
             if (user_password.length < 5){
-                $("#user_password").removeClass('is-valid')
-                $("#user_password").addClass('is-invalid')
-                $("#user_password").next().text('비밀번호는 5자 이상이여야 합니다.')
+                InvalidInput(user_password_obj, '비밀번호는 5자 이상이여야 합니다.')
                 return 
-            }else{
-                $("#user_password").addClass('is-valid')
-                $("#user_password").removeClass('is-invalid')
-            }
-            var re_user_password= $("#re_user_password").val()
-            if (user_password != re_user_password) {
-                $("#re_user_password").removeClass('is-valid')
-                $("#re_user_password").addClass('is-invalid')
-                $("#re_user_password").next().text('비밀번호가 다릅니다.')
             } else {
-                $("#re_user_password").addClass('is-valid')
-                $("#re_user_password").removeClass('is-invalid')
+                ValidInput(user_password_obj)
             }
-            console.log(user_id)
-            console.log(user_password)
-            console.log(re_user_password)
+            var re_user_password_obj= $("#re_user_password")
+            var re_user_password = re_user_password_obj.val()
+            if (user_password != re_user_password) {
+                InvalidInput(re_user_password_obj, '비밀번호가 다릅니다.')
+            } else {
+                ValidInput(re_user_password_obj)
+            }
+
+            $('.form-signin').submit()
         })
     })
+    function InvalidInput(obj, msg){
+        obj.removeClass('is-valid')
+        obj.addClass('is-invalid')
+        obj.next().text(msg)
+    }
+    function ValidInput(obj){
+        obj.addClass('is-valid')
+        obj.removeClass('is-invalid')
+    }
 </script>
 </html>
 

@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 
-class User(models.Model):
+class UserInfo(models.Model):
     class Meta:
         db_table = 'user_info'
 
@@ -25,9 +25,10 @@ class User(models.Model):
 class RequestVendor(models.Model):
     class Meta:
         db_table = 'request_vendor'
+        unique_together = (("user_id", "vendor_pk"),)
     # t_task = models.CharField(max_length=100)
-    user_id = models.CharField(max_length=100, null=True)
-    vendor_pk = models.IntegerField(null=True)
+    user_id = models.CharField(max_length=100)
+    vendor_pk = models.IntegerField()
     vendor_id = models.CharField(max_length=200, null=True)
     vendor_password = models.CharField(max_length=200, null=True)
     created_at = models.DateTimeField(

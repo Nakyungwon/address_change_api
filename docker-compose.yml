@@ -16,6 +16,8 @@ services:
         # sh -c "python manage.py runserver 0.0.0.0:8000"
         depends_on:
             - mysql
+        # networks:
+        #     - backend
 
     nginx:
         image: nginx:latest # nginx 서비스에서 사용할 도커 이미지
@@ -25,8 +27,22 @@ services:
         volumes:
             - ./app:/app
             - ./config/nginx:/etc/nginx/conf.d
+            - ./.static_root/:/static
         depends_on: # 서비스 간의 종속성 표현
             - app
+        # networks:
+        #     - backend
+
+    redis:
+        image: redis:5
+        container_name: channel_redis
+        command: redis-server --port 6379
+        hostname: redis_boot
+        labels:
+            - 'name=redis'
+            - 'mode=standalone'
+        ports:
+            - '6379:6379'
 
     mysql:
         image: mysql
@@ -40,3 +56,9 @@ services:
         command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
         ports:
             - '3306:3306'
+        # networks:
+        #     - backend
+
+networks:
+    backend:
+        driver: bridge

@@ -56,10 +56,7 @@ def Do(request):
         todo_obj.user_id = 'saecomaster1'
         todo_obj.save()
 
-        return HttpResponse(
-    json.dumps(
-        getAllTask()),
-         content_type='application/json')
+        return HttpResponse(json.dumps(getAllTask()), content_type='application/json')
     if request.method == 'PUT':
         put = QueryDict(request.body)
         pk = put.get('pk', None)
