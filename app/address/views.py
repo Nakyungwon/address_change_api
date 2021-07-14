@@ -5,6 +5,9 @@ from django.http import QueryDict, HttpResponse, JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
 # from django.utils.decorators import method_decorator
 # from .models import RequestVendor'
+import json
+import bcrypt
+import jwt
 from .models import UserInfo
 import json
 from .vendor.stragy import *
@@ -40,18 +43,39 @@ def render_signup(req):
     return render(req, "address/signup.html", context=context)
 
 
+def signin(req):
+    if req.method == 'POST':
+        data = QueryDict(req.body)
+        # 존재하는 이메일인지 확인
+        if UserInfo.objects.filter(user_id=data['user_id']).exists():
+            print('ok')
+        else:
+            print('nono')
+
+
 def signup(req):
     if req.method == 'POST':
-        post = QueryDict(req.body)
-        print(post)
+        data = QueryDict(req.body)
         user_obj = UserInfo()
-        user_obj.user_id = post['user_id']
-        user_obj.user_password = post['user_password']
+        # 존재하는 이메일인지 확인
+        if UserInfo.objects.filter(user_id=data['user_id']).exists():
+            return HttpResponse(status=400)
+        user_obj.user_id = data['user_id']
+
+        # ==== 비밀번호 암호화====#
+
+        password = data['user_password'].encode('utf-8')                # 입력된 패스워드를 바이트 형태로 인코딩
+        password_crypt = bcrypt.hashpw(password, bcrypt.gensalt())  # 암호화된 비밀번호 생성
+        # DB에 저장할 수 있는 유니코드 문자열 형태로 디코딩
+        password_crypt = password_crypt.decode('utf-8')
+
+        # ====================#
+        user_obj.user_password = password_crypt
         user_obj.save()
         return render(req, "address/index.html")
 
 
-def render_login(req):
+def render_signin(req):
     context = {
 
     }

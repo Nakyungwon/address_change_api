@@ -45,33 +45,30 @@
     {% block content %}
     <div class="container">
         <div class="row">
-        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-            <div class="card card-signin my-5">
-            <div class="card-body">
-                <h5 class="card-title text-center">Sign In</h5>
-                <form class="form-signin">
-                <div class="form-label-group">
-                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-                    <label for="inputEmail">Email address</label>
-                </div>
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Sign In</h5>
+                        <form class="form-signin" method="post" action="{% url 'signin' %}">
+                            {% csrf_token %}
+                            <div class="form-label-group">
+                                <input type="text" id="user_id" class="form-control" name="user_id" placeholder="ID" required>
+                                <div class="invalid-feedback">
+                                </div>
+                                <label for="user_id">ID</label>
+                            </div>
 
-                <div class="form-label-group">
-                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                    <label for="inputPassword">Password</label>
+                            <div class="form-label-group">
+                                <input type="password" id="user_password" class="form-control" name="user_password" placeholder="Password" required>
+                                <div class="invalid-feedback">
+                                </div>
+                                <label for="user_password">Password</label>
+                            </div>
+                            <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" id="signin">Sign In</button>
+                        </form>
+                    </div>
                 </div>
-
-                <div class="custom-control custom-checkbox mb-3">
-                    <input type="checkbox" class="custom-control-input" id="customCheck1">
-                    <label class="custom-control-label" for="customCheck1">Remember password</label>
-                </div>
-                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
-                <hr class="my-4">
-                <button class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i class="fab fa-google mr-2"></i> Sign in with Google</button>
-                <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="submit"><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
-                </form>
             </div>
-            </div>
-        </div>
         </div>
     </div>
     
@@ -80,33 +77,41 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="//d1p7wdleee1q2z.cloudfront.net/post/search.min.js"></script>
 <script type="text/javascript">
-    {% comment %} function openAddressPopup(){ {% endcomment %}
-        /*var url = location.href
-        var confmKey = "devU01TX0FVVEgyMDIxMDYxNzAwNDIyMDExMTI5MTE="
-        var resultType = '4'
-        var inputYn = "<?=ADDR['inputYn']?>"
-        if(inputYn != "Y"){
-            document.form.confmKey.value = confmKey;
-            document.form.returnUrl.value = url;
-            document.form.resultType.value = resultType;
-            document.form.action.value = "http://www.juso.go.kr/addrlink/addrLinkUrl.do";
-            document.form.submit()
-        } else {
-            opener.jusoCallBack("<?=$ADDR[roadFullAddr]?>", "<?=$ADDR[roadAddrPart1]?>", "<?=$ADDR[addrDetail]?>")
-            window.close()
-        } */
-        
-    {% comment %} } {% endcomment %}
     $(function() {
-        $("#postcodify_search_button").postcodifyPopUp( {
-            forceDisplayPostcode5 : true,
-            insertPostcode5 : "#postcode",
-            insertAddress : "#address",
-            insertDetails : "#details",
-            insertExtraInfo : "#extra_info",
-            hideOldAddresses : false
-        } );
+        $("#signin").click(function (){
+            var htmlStr = ""
+            var user_id_obj= $("#user_id")
+            var user_id = user_id_obj.val()
+            var regType1 = /^[A-Za-z0-9+]*$/;
+            if (user_id.length < 5){
+                InvalidInput(user_id_obj, '아이디는 5자 이상이여야 합니다.')
+                return 
+            } else if(!regType1.test(user_id)){
+                InvalidInput(user_id_obj, '아이디는 영문 숫자만 가능 합니다.')
+                return
+            }else {
+                ValidInput(user_id_obj)
+            }
+            var user_password_obj= $("#user_password")
+            var user_password = user_password_obj.val()
+            if (user_password.length < 5){
+                InvalidInput(user_password_obj, '비밀번호는 5자 이상이여야 합니다.')
+                return 
+            } else {
+                ValidInput(user_password_obj)
+            }
+            $('.form-signin').submit()
+        })
     })
+    function InvalidInput(obj, msg){
+        obj.removeClass('is-valid')
+        obj.addClass('is-invalid')
+        obj.next().text(msg)
+    }
+    function ValidInput(obj){
+        obj.addClass('is-valid')
+        obj.removeClass('is-invalid')
+    }
 </script>
 </html>
 
