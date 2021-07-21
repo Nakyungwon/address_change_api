@@ -20,6 +20,7 @@ from django.conf.urls import include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import (handler400, handler404, handler500)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,3 +28,7 @@ urlpatterns = [
     # path('todo/', include('todo.urls')),
     # path('', RedirectView.as_view(url="/address_migration")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+handler400 = 'address.views.bad_request_page'
+handler404 = 'address.views.page_not_found_page'
+handler500 = 'address.views.server_error_page'

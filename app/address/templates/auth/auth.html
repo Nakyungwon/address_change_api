@@ -1,0 +1,73 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% bootstrap_messages %}
+{% load static %}
+<!-- <html zlang="en"> -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Migration</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body{
+            margin: 0;
+            font-family: var(--bs-font-sans-serif);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .todo_check{
+            float: right
+        }
+        .float_right{
+            float: right
+        }
+        #app{
+            position: relative
+        }
+        .container{
+            position: relative;
+            top: 20%;
+        }
+        .row {
+            margin-bottom: 10px;
+        }
+    </style>
+    
+</head>
+<body id="app">
+    {% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        로그인 성공
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% endblock %}
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="./jquery.cookie.js"></script>
+<script src="//d1p7wdleee1q2z.cloudfront.net/post/search.min.js"></script>
+<script type ="text/javascript" src="{% static 'js/cookies.js' %}"> </script>
+<script type="text/javascript">
+    $(function() {
+        setCookie('user_token', '{{user_token}}')
+        location.href = '/'
+        
+    })
+</script>
+</html>
+
+

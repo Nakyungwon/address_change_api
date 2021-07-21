@@ -132,6 +132,10 @@ USE_L10N = True
 
 USE_TZ = False
 
+JWT_SECRET_KEY = 'secret1234'
+
+ALGORITHM = 'HS256'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
