@@ -12,10 +12,11 @@ class UserInfo(models.Model):
     address = models.CharField(max_length=200, null=True)
     address_detail = models.CharField(max_length=200, null=True)
     recipient = models.CharField(max_length=200, null=True)
+    postcode = models.CharField(max_length=200, null=True)
     shipping_address = models.CharField(max_length=200, null=True)
-    phon_number_head = models.CharField(max_length=200, null=True)
-    phon_number_middle = models.CharField(max_length=200, null=True)
-    phon_number_tail = models.CharField(max_length=200, null=True)
+    phone_number_head = models.CharField(max_length=200, null=True)
+    phone_number_middle = models.CharField(max_length=200, null=True)
+    phone_number_tail = models.CharField(max_length=200, null=True)
     created_at = models.DateTimeField(
         auto_now_add=True, null=True, blank=True)  # 해당 레코드 생성시 현재 시간 자동저장
     updated_at = models.DateTimeField(

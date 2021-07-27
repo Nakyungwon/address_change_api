@@ -80,8 +80,8 @@
     </div>
     <div class="container">
         <div class="col-sm-14 col-md-10 col-lg-10 mx-auto">
-    		<div class="card card-signin my-5">
-    			<div class="card-body">
+            <div class="card card-signin my-5">
+                <div class="card-body">
             {% comment %} <di class="row">
                 <label for="exampleInputEmail1">공통계정</label>
                 <div class="input-group mb-3">
@@ -92,68 +92,78 @@
                 </div>
             </di> {% endcomment %}
 						<div class="form-row">
-                            <label for="exampleInputEmail1">주소</label>
-                            <div class="input-group mb-3 ">
-								<input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="" />
-								<button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
-                            </div>
-							
-							<div class="input-group mb-3">
-								<input type="text" id="address" class="form-control postcodify_address" value="" /><br />
-							</div>
-							<div class="input-group mb-3">
-								<input type="text" id="address_detail" class="form-control postcodify_details" value="" /><br />
-							</div>
+                            <form id="my_address">
+                                <label for="exampleInputEmail1">주소</label>
+                                <div class="input-group mb-3 ">
+                                    <input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="{% firstof user_info.postcode '' %}" />
+                                    <button class="btn btn-primary form-control" id="postcodify_search_button" onclick="return false;">검색</button>
+                                </div>
+                                
+                                <div class="input-group mb-3">
+                                    <input type="text" id="address" name="address" class="form-control postcodify_address" value="{% firstof user_info.address '' %}" /><br />
+                                </div>
+                                <div class="input-group mb-3">
+                                    <input type="text" id="address_detail" name="address_detail" class="form-control postcodify_details" value="{% firstof user_info.address_detail '' %}" /><br />
+                                </div>
 
-                            {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
-                            <div class="row">
-                                <div class="col">
-                                    <label for="inputPassword3">수취인</label>
-                                    <div class="input-group mb-3 row">
-                                        <div class="col">
-                                            <input type="text" class="form-control" name="recipient" id="recipient"  value="">
+                                {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="inputPassword3">수취인</label>
+                                        <div class="input-group mb-3 row">
+                                            <div class="col">
+                                                <input type="text" class="form-control" name="recipient" id="recipient"  value="{% firstof user_info.recipient '' %}">
+                                            </div>
                                         </div>
                                     </div>
+                                    <div class="col">
+                                        <label for="inputPassword3">수신지(선택)</label>
+                                        <div class="input-group mb-3 row">
+                                            <div class="col">
+                                                <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="{% firstof user_info.shipping_address '' %}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="inputPassword3">전화번호</label>    
+                                        <div class="input-group mb-3 row">
+                                            <div class="col">
+                                                <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="{% firstof user_info.phone_number_head '' %}">
+                                            </div>
+                                            <span class="text-vertical-center">-</span>
+                                            <div class="col">
+                                                <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="{% firstof user_info.phone_number_middle '' %}">
+                                            </div>
+                                            <span class="text-vertical-center">-</span>
+                                            <div class="col">
+                                                <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="{% firstof user_info.phone_number_tail '' %}">
+                                            </div>
+                                        </div>
+                                    </div>  
                                 </div>
-                                <div class="col">
-                                    <label for="inputPassword3">수신지(선택)</label>
-                                    <div class="input-group mb-3 row">
-                                        <div class="col">
-                                            <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="">
-                                        </div>
-                                    </div>
+                                {% if user_info %}
+                                <div>
+                                    <button type="button" class="btn btn-primary btn-block" id="address_save">주소 저장</button>
                                 </div>
-                                <div class="col-6">
-                                    <label for="inputPassword3">전화번호</label>    
-                                    <div class="input-group mb-3 row">
-                                        <div class="col">
-                                            <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="">
-                                        </div>
-                                        <span class="text-vertical-center">-</span>
-                                        <div class="col">
-                                            <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="">
-                                        </div>
-                                        <span class="text-vertical-center">-</span>
-                                        <div class="col">
-                                            <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="">
-                                        </div>
-                                    </div>
-                                </div>  
-                            </div>
+                                {% endif %}
+                            </form>
 							{% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
                             <div class="row">
-                            <div    class="col input-group mb-3">
-                                <button class="btn btn-primary form-control" id="add_vendor"> + 추가 </button>
-                            </div> 
+                                <div    class="col input-group mb-3">
+                                    <button class="btn btn-primary form-control" id="add_vendor"> + 계정 추가 </button>
+                                </div> 
                             </div>
 						</div>
 						<div id="vendor_area">
+                            {% for request_vendor in request_vendor_list %}
 							<form name="addressform">
 								<div class="row align-items-center">
 									<div class="col">
 										<select class="form-control" name="vendor">
-											<option value="musinsa">무신사</option>
-                                            <option value="auction">옥션</option>
+                                            {% for vendor in vendor_list %}
+                                                <option value="{{vendor.value}}">{{vendor.key}}</option>
+                                                {% comment %} <option value="auction">옥션</option> {% endcomment %}
+                                            {% endfor %}
 										</select>
 									</div>
 									<div class="col">
@@ -171,6 +181,7 @@
                                     <span><span>
                                 </div>
 							</form>
+                            {% endfor %}
 						</div>
         		</div>
         	</div>
@@ -310,7 +321,7 @@
             authStr = ''
             authStr += '<ul class="navbar-nav align-items-center mr-0">'
             authStr += '    <li class="nav-item dropdown">'
-            authStr += '        <a class="nav-link" href="{% url "signin_page" %}">나경원</a>'
+            authStr += '        <a class="nav-link" href="{% url "userinfo_page" %}">' +decodedToken.user_id+' <small>님 환영합니다. </small></a>'
             authStr += '    </li>'
             authStr += '    <li class="nav-item dropdown">'
             authStr += '        <a class="nav-link" href="javascript:signOut()">sign out</a>'
@@ -325,10 +336,39 @@
     }
     function signOut(){
         deleteCookie('user_token')
-        location.reload()
+        location.href = '/'
     }
     $(function() {
         init()
+
+        $("#address_save").click(function (){
+            var myAddressForm = $("#my_address")
+            var formData = myAddressForm.serializeArray()
+            object = {}
+            formData.forEach(function(value, key){
+                object[value['name']] = value['value'];
+            });
+
+            var json_str_obj = JSON.stringify(object)
+            console.log(json_str_obj)
+
+            $.ajax({
+                type : 'put',
+                url: "{% url 'update_address' %}",
+                beforeSend : function(xhr){
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                },
+                data : json_str_obj,
+                dataType : 'json',
+                error: function(xhr, status, error){
+                    alert(error);
+                },
+                success : function(json){
+                    alert(json)
+                }
+            });
+        })
 
         $("#postcodify_search_button").postcodifyPopUp( {
             forceDisplayPostcode5 : true,

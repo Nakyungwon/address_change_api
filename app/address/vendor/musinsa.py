@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 class Musinsa(Base):
+    display_name = '무신사'
     url = 'https://my.musinsa.com/login/v1/login?&referer=http%3A%2F%2Fwww.musinsa.com%2Findex.php%3F'
     address_url = 'https://store.musinsa.com/app/delivery/lists/app/delivery/lists'
     id_x_path = '/html/body/div/div/form/input[2]'
@@ -14,23 +15,9 @@ class Musinsa(Base):
 
     def __init__(
             self,
-            # vendor_id,
-            # vendor_password,
-            # address,
-            # address_detail,
-            # recipient,
-            # shipping_address,
-            # phone_number_head,
-            # phone_number_middle,
-            # phone_number_tail,
             **kward
     ):
         super().__init__(self.url, self.address_url)
-        # print(self.driver)
-        # self.driver = webdriver.Chrome(
-        #     executable_path=Base.chromedriver,
-        #     chrome_options=Base.options)
-        # self.driver.delete_all_cookies()
         self.vendor_id = kward['vendor_id']
         self.vendor_password = kward['vendor_password']
         self.address = kward['address']

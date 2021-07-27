@@ -8,6 +8,7 @@ import time
 
 
 class Auction(Base):
+    display_name = '옥션'
     url = 'https://memberssl.auction.co.kr/Authenticate'
     address_url = 'https://memberssl.auction.co.kr/AddressBook/AddAddressBook.aspx'
     id_x_path = '/html/body/div[2]/div/div/form/div/div/div/div[1]/fieldset/ul/li[1]/input'

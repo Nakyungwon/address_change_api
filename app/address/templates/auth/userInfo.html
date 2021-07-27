@@ -1,0 +1,381 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% bootstrap_messages %}
+{% load static %}
+<!-- <html zlang="en"> -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Migration</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body{
+            margin: 0;
+            font-family: var(--bs-font-sans-serif);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .todo_check{
+            float: right
+        }
+        .float_right{
+            float: right
+        }
+        #app{
+            position: relative
+        }
+        .container{
+            position: relative;
+            top: 20%;
+        }
+        .row {
+            margin-bottom: 10px;
+        }
+        .text-vertical-center {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-expand-lg .navbar-nav {
+            flex-direction: row;
+        }
+        .navbar-expand-lg .navbar-nav .nav-link {
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+        }
+        .nav-link{
+            color: white;
+            font-weight: bold;
+        }
+        .navbar-nav .nav-item + .nav-item {
+            margin-left: 1rem;
+            color: #fff;
+        }
+    </style>
+    
+</head>
+<body id="app">
+    {% block content %}
+    <div class="container">
+        <div class="col-sm-14 col-md-10 col-lg-10 mx-auto">
+            <nav class="navbar navbar-expand-lg navbar-dark" id="auth-area">
+                {% comment %} <div class="navbar-collapse collapse"> {% endcomment %}
+                    <ul class="navbar-nav align-items-center mr-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="{% url 'signin_page' %}">sign in</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="{% url 'signup_page' %}">sign up</a>
+                        </li>
+                    </ul>
+                {% comment %} </div> {% endcomment %}
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <div class="col-sm-14 col-md-10 col-lg-10 mx-auto">
+    		<div class="card card-signin my-5">
+    			<div class="card-body">
+            {% comment %} <di class="row">
+                <label for="exampleInputEmail1">공통계정</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="commonId" placeholder="공통ID">
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="commonPassword" placeholder="공통비번">
+                </div>
+            </di> {% endcomment %}
+						<div class="form-row">
+                            <label for="exampleInputEmail1">주소</label>
+                            <div class="input-group mb-3 ">
+								<input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="" />
+								<button class="btn btn-primary form-control" id="postcodify_search_button" onclick="openAddressPopup()">검색</button>
+                            </div>
+							
+							<div class="input-group mb-3">
+								<input type="text" id="address" class="form-control postcodify_address" value="" /><br />
+							</div>
+							<div class="input-group mb-3">
+								<input type="text" id="address_detail" class="form-control postcodify_details" value="" /><br />
+							</div>
+
+                            {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
+                            <div class="row">
+                                <div class="col">
+                                    <label for="inputPassword3">수취인</label>
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="recipient" id="recipient"  value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="inputPassword3">수신지(선택)</label>
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <label for="inputPassword3">전화번호</label>    
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="">
+                                        </div>
+                                        <span class="text-vertical-center">-</span>
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="">
+                                        </div>
+                                        <span class="text-vertical-center">-</span>
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="">
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>
+							{% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
+                            <div class="row">
+                            <div    class="col input-group mb-3">
+                                <button class="btn btn-primary form-control" id="add_vendor"> + 추가 </button>
+                            </div> 
+                            </div>
+						</div>
+						<div id="vendor_area">
+							<form name="addressform">
+								<div class="row align-items-center">
+									<div class="col">
+										<select class="form-control" name="vendor">
+											<option value="musinsa">무신사</option>
+                                            <option value="auction">옥션</option>
+										</select>
+									</div>
+									<div class="col">
+										<input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">
+									</div>
+									<div class="col">
+										<input type="password" class="form-control" name="vendor_password" placeholder="password" value="">
+									</div>
+									<div class="col">
+										<button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>
+									</div>
+								</div>
+                                <div class="tracking">
+                                    {% comment %} <div class="text-danger">message</div> {% endcomment %}
+                                    <span><span>
+                                </div>
+							</form>
+						</div>
+        		</div>
+        	</div>
+        </div>
+    </div>
+    {% comment %} <div class="container">
+        <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-10 mx-auto">
+            <div class="card card-signin my-5">
+            <div class="card-body">
+                <h5 class="card-title text-center">Sign In</h5>
+                <form class="form-signin">
+                <div class="form-label-group">
+                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                    <label for="inputEmail">Email address</label>
+                </div>
+
+                <div class="form-label-group">
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                    <label for="inputPassword">Password</label>
+                </div>
+
+                <div class="custom-control custom-checkbox mb-3">
+                    <input type="checkbox" class="custom-control-input" id="customCheck1">
+                    <label class="custom-control-label" for="customCheck1">Remember password</label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
+                <hr class="my-4">
+                <button class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i class="fab fa-google mr-2"></i> Sign in with Google</button>
+                <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="submit"><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
+                </form>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div> {% endcomment %}
+    
+    {% endblock %}
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="//d1p7wdleee1q2z.cloudfront.net/post/search.min.js"></script>
+<script type ="text/javascript" src="{% static 'js/cookies.js' %}"> </script>
+<script type="text/javascript">
+    {% comment %} function openAddressPopup(){ {% endcomment %}
+        /*var url = location.href
+        var confmKey = "devU01TX0FVVEgyMDIxMDYxNzAwNDIyMDExMTI5MTE="
+        var resultType = '4'
+        var inputYn = "<?=ADDR['inputYn']?>"
+        if(inputYn != "Y"){
+            document.form.confmKey.value = confmKey;
+            document.form.returnUrl.value = url;
+            document.form.resultType.value = resultType;
+            document.form.action.value = "http://www.juso.go.kr/addrlink/addrLinkUrl.do";
+            document.form.submit()
+        } else {
+            opener.jusoCallBack("<?=$ADDR[roadFullAddr]?>", "<?=$ADDR[roadAddrPart1]?>", "<?=$ADDR[addrDetail]?>")
+            window.close()
+        } */
+        
+    {% comment %} } {% endcomment %}
+    var socket = null
+    function parseJwt (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    };
+    function init(){
+        var userToken = getCookie('user_token')
+        if (userToken != null) {
+            var decodedToken = parseJwt(userToken)
+            console.log(decodedToken)
+            authStr = ''
+            authStr += '<ul class="navbar-nav align-items-center mr-0">'
+            authStr += '    <li class="nav-item dropdown">'
+            authStr += '        <a class="nav-link" href="{% url "userinfo_page" %}">' +decodedToken.user_id+' <small>님 환영합니다. </small></a>'
+            authStr += '    </li>'
+            authStr += '    <li class="nav-item dropdown">'
+            authStr += '        <a class="nav-link" href="javascript:signOut()">sign out</a>'
+            authStr += '    </li>'
+            authStr += '</ul>'
+            $("#auth-area").html(authStr)
+        }
+    }
+
+    function socketDisconnect(){
+        socket.close()
+    }
+    function signOut(){
+        deleteCookie('user_token')
+        location.href = '/'
+    }
+    $(function() {
+        init()
+
+        $("#postcodify_search_button").postcodifyPopUp( {
+            forceDisplayPostcode5 : true,
+            insertPostcode5 : "#postcode",
+            insertAddress : "#address",
+            insertDetails : "#details",
+            insertExtraInfo : "#extra_info",
+            hideOldAddresses : false
+        } );
+
+        $('#add_vendor').click(function(){
+			var row_str = ''
+			row_str += '<form name="addressform">'
+            row_str += '    <div class="row align-items-center">'
+            row_str += '        <div class="col">'
+            row_str += '            <select class="form-control" name="vendor">'
+            row_str += '                <option value="musinsa">무신사</option>'
+            row_str += '            </select>'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="">'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
+            row_str += '        </div>'
+            row_str += '    </div>'
+            row_str += '    <div>'
+            row_str += '        <div>message</div>'
+            row_str += '    </div>'
+            row_str += '</form>'
+
+			var origin_html = $("#vendor_area").html()
+			//console.log(origin_html)
+			console.log(row_str)
+			//$("#vendor_area").html(origin_html + row_str)
+            $("#vendor_area").append(row_str)
+        })
+    })
+	function changeAddress(obj){
+        objForm= obj.closest('form[name=addressform]')
+        formIndex = 0
+        var addressFormList = $("form[name=addressform]")
+
+        for(var i = 0; i < addressFormList.length; i ++){
+            if (objForm == addressFormList[i]){
+                formIndex = i
+                break
+            }
+        }
+        var object = {};
+		var formData = addressFormList.eq(formIndex).serializeArray();
+        formData.forEach(function(value, key){
+            object[value['name']] = value['value'];
+        });
+        /*var postcode = $("#postcode").val()
+        var address = $("#address").val()
+        var details = $("#address_detail").val()
+        var recipient = $("#recipient").val()
+        var shipping_address = $("#shipping_address").val()
+        var phone_number_head = $("#phone_number_head").val()
+        var phone_number_middle = $("#phone_number_middle").val()
+        var phone_number_tail = $("#phone_number_tail").val()*/
+
+        object['postcode'] = $("#postcode").val()
+        object['address'] = $("#address").val()
+        object['address_detail'] = $("#address_detail").val()
+        object['recipient'] = $("#recipient").val()
+        object['shipping_address'] = $("#shipping_address").val()
+        object['phone_number_head'] = $("#sphone_number_head").val()
+        object['phone_number_middle'] = $("#phone_number_middle").val()
+        object['phone_number_tail'] = $("#phone_number_tail").val()
+        //object['vendor'] = 'musinsa'
+        object['index'] = formIndex
+        json_str_obj = JSON.stringify({
+            object
+        })
+
+        console.log(json_str_obj)
+        
+        //queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details+'&recipient='+recipient+'&shipping_address='+shipping_address+'&phone_number_head='+phone_number_head+'&phone_number_middle='+phone_number_middle+'&phone_number_tail='+phone_number_tail
+        //console.log(queryString)
+        /*socket.send(JSON.stringify({
+            
+            'vendor': 'musinsa'
+        }));*/
+        //socket.send(queryString)
+        socket.send(json_str_obj);
+        {% comment %} $.ajax({
+            type : 'post',
+            url: "{% url 'address' %}",
+            beforeSend : function(xhr){
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            },
+            data : queryString,
+            dataType : 'json',
+            error: function(xhr, status, error){
+                alert(error);
+            },
+            success : function(json){
+                alert(json)
+            }
+        }); {% endcomment %}
+	}
+</script>
+</html>
+
+
