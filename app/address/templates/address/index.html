@@ -155,34 +155,12 @@
                             </div>
 						</div>
 						<div id="vendor_area">
-                            {% for request_vendor in request_vendor_list %}
-							<form name="addressform">
-								<div class="row align-items-center">
-									<div class="col">
-										<select class="form-control" name="vendor">
-                                            {% for vendor in vendor_list %}
-                                                <option value="{{vendor.value}}">{{vendor.key}}</option>
-                                                {% comment %} <option value="auction">옥션</option> {% endcomment %}
-                                            {% endfor %}
-										</select>
-									</div>
-									<div class="col">
-										<input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">
-									</div>
-									<div class="col">
-										<input type="password" class="form-control" name="vendor_password" placeholder="password" value="">
-									</div>
-									<div class="col">
-										<button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>
-									</div>
-								</div>
-                                <div class="tracking">
-                                    {% comment %} <div class="text-danger">message</div> {% endcomment %}
-                                    <span><span>
-                                </div>
-							</form>
-                            {% endfor %}
 						</div>
+                        {% if user_info %}
+                        <div>
+                            <button type="button" class="btn btn-primary btn-block" id="account_save">계정 저장</button>
+                        </div>
+                        {% endif %}
         		</div>
         	</div>
         </div>
@@ -329,6 +307,7 @@
             authStr += '</ul>'
             $("#auth-area").html(authStr)
         }
+
     }
 
     function socketDisconnect(){
@@ -340,6 +319,7 @@
     }
     $(function() {
         init()
+        initVendorRequest()
 
         $("#address_save").click(function (){
             var myAddressForm = $("#my_address")
@@ -385,7 +365,7 @@
             row_str += '    <div class="row align-items-center">'
             row_str += '        <div class="col">'
             row_str += '            <select class="form-control" name="vendor">'
-            row_str += '                <option value="musinsa">무신사</option>'
+            row_str +=                 get_vendor_list()
             row_str += '            </select>'
             row_str += '        </div>'
             row_str += '        <div class="col">'
@@ -398,8 +378,9 @@
             row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
             row_str += '        </div>'
             row_str += '    </div>'
-            row_str += '    <div>'
-            row_str += '        <div>message</div>'
+            row_str += '    <div class="tracking">'
+            row_str += '        {% comment %} <div class="text-danger">message</div> {% endcomment %}'
+            row_str += '        <span><span>'
             row_str += '    </div>'
             row_str += '</form>'
 
@@ -410,6 +391,55 @@
             $("#vendor_area").append(row_str)
         })
     })
+
+    function get_vendor_list(){
+        var vendorList = {{ vendor_list|safe }}
+        option_str = ''
+        vendorList.forEach(element => {
+            option_str += '<option value=' + element.value + '>' + element.key + '</option>'
+        })
+        return option_str
+    }
+
+    function initVendorRequest() {
+        var requestVendorList = {{ request_vendor_list|safe }}
+        {% comment %} console.log(requestVendorList)     {% endcomment %}
+        {% comment %} for (var i = 0;  i < vendorList.length; i++){
+            console.log(i)
+        } {% endcomment %}
+
+        row_str = ''
+        requestVendorList.forEach(element => {
+            row_str += '<form name="addressform">'
+            row_str += '    <div class="row align-items-center">'
+            row_str += '        <div class="col">'
+            row_str += '            <select class="form-control" name="vendor">'
+            row_str +=                 get_vendor_list()
+            row_str += '            </select>'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="">'
+            row_str += '        </div>'
+            row_str += '        <div class="col">'
+            row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
+            row_str += '        </div>'
+            row_str += '    </div>'
+            row_str += '    <div class="tracking">'
+            row_str += '        {% comment %} <div class="text-danger">message</div> {% endcomment %}'
+            row_str += '        <span><span>'
+            row_str += '    </div>'
+            row_str += '</form>'
+
+        })
+        var row_str = $("#vendor_area").html()
+        $("#vendor_area").append(row_str)
+    }
+
+    
+
 	function changeAddress(obj){
         objForm= obj.closest('form[name=addressform]')
         formIndex = 0

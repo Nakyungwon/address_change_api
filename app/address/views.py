@@ -81,7 +81,7 @@ def index(req):
         )[0]
         context['user_info'] = user_info
         request_vendor_list = RequestVendor.objects.filter(user_id=user_id)
-        context['request_vendor_list'] = request_vendor_list
+        context['request_vendor_list'] = serializers.serialize("json", request_vendor_list)
         
     return render(
         req,
