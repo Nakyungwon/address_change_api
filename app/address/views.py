@@ -97,6 +97,14 @@ def render_signup(req):
     return render(req, "auth/signup.html", context=context)
 
 
+def vendor_request(req):
+    if req.method == 'POST':
+        user_token = req.COOKIES.get('user_token', None)
+        decoded_token = JWTToken.decodeToken(user_token)
+        data = QueryDict(req.body)
+        print(data)
+
+
 def update_address(req):
     if req.method == 'PUT':
         user_token = req.COOKIES.get('user_token', None)

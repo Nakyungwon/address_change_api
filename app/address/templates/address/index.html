@@ -154,8 +154,9 @@
                                 </div> 
                             </div>
 						</div>
-						<div id="vendor_area">
-						</div>
+                        <div id="vendor_area">
+                            
+                        </div>
                         {% if user_info %}
                         <div>
                             <button type="button" class="btn btn-primary btn-block" id="account_save">계정 저장</button>
@@ -321,16 +322,54 @@
         init()
         initVendorRequest()
 
+        $("#account_save").click(function () {
+            //var vendorRequest = $("#vendor_request")
+            //vendorRequest.submit()
+            // var formData = vendorRequest.serializeArray()
+            var object = {}
+            var vendor_ids_obj = $("input[name='vendor_id']")
+            var vendor_passwords_obj = $("input[name='vendor_password']")
+            var vendors_obj = $("select[name='vendor']")
+            console.log(vendors_obj.length)
+            object['vendor_id'] = []
+            object['vendor_password'] = []
+            object['vendor'] = []
+            for (var i = 0 ; i < vendor_ids_obj.length; i ++ ){
+                object['vendor_id'].push(vendor_ids_obj.eq(i).val())
+                object['vendor_password'].push(vendor_passwords_obj.eq(i).val())
+                object['vendor'].push(vendors_obj.eq(i).val())
+            }
+            var json_str_obj = JSON.stringify(object)
+            console.log(json_str_obj)
+            $.ajax({
+                type : 'post',
+                url: "{% url 'vendor_request' %}",
+                beforeSend : function(xhr){
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                },
+                data : json_str_obj,
+                dataType : 'json',
+                error: function(xhr, status, error){
+                    alert(error);
+                },
+                success : function(json){
+                    alert(json)
+                }
+            });
+            
+        })
+
         $("#address_save").click(function (){
             var myAddressForm = $("#my_address")
             var formData = myAddressForm.serializeArray()
-            object = {}
+            var object = {}
             formData.forEach(function(value, key){
                 object[value['name']] = value['value'];
             });
 
             var json_str_obj = JSON.stringify(object)
-            console.log(json_str_obj)
+            //console.log(json_str_obj)
 
             $.ajax({
                 type : 'put',
@@ -386,7 +425,7 @@
 
 			var origin_html = $("#vendor_area").html()
 			//console.log(origin_html)
-			console.log(row_str)
+			//console.log(row_str)
 			//$("#vendor_area").html(origin_html + row_str)
             $("#vendor_area").append(row_str)
         })
