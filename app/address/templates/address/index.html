@@ -295,6 +295,12 @@
     };
     function init(){
         var userToken = getCookie('user_token')
+        var token_delete = '{{token_delete}}'
+        if (token_delete == 'Y') {
+            deleteCookie('user_token')
+            userToken = null
+        }
+        
         if (userToken != null) {
             var decodedToken = parseJwt(userToken)
             authStr = ''
@@ -330,7 +336,6 @@
             var vendor_ids_obj = $("input[name='vendor_id']")
             var vendor_passwords_obj = $("input[name='vendor_password']")
             var vendors_obj = $("select[name='vendor']")
-            console.log(vendors_obj.length)
             object['vendor_id'] = []
             object['vendor_password'] = []
             object['vendor'] = []
@@ -369,7 +374,7 @@
             });
 
             var json_str_obj = JSON.stringify(object)
-            //console.log(json_str_obj)
+            console.log(json_str_obj)
 
             $.ajax({
                 type : 'put',
@@ -404,7 +409,7 @@
             row_str += '    <div class="row align-items-center">'
             row_str += '        <div class="col">'
             row_str += '            <select class="form-control" name="vendor">'
-            row_str +=                 get_vendor_list()
+            row_str +=                 get_vendor_list(null)
             row_str += '            </select>'
             row_str += '        </div>'
             row_str += '        <div class="col">'
@@ -431,36 +436,36 @@
         })
     })
 
-    function get_vendor_list(){
+    function get_vendor_list(vendor_pk){
         var vendorList = {{ vendor_list|safe }}
         option_str = ''
         vendorList.forEach(element => {
-            option_str += '<option value=' + element.value + '>' + element.key + '</option>'
+            if ( vendor_pk == element.value ) {
+                option_str += '<option value=' + element.value + ' selected=selected>' + element.key + '</option>'
+            } else {
+                option_str += '<option value=' + element.value + '>' + element.key + '</option>'
+            }
         })
         return option_str
     }
 
     function initVendorRequest() {
         var requestVendorList = {{ request_vendor_list|safe }}
-        {% comment %} console.log(requestVendorList)     {% endcomment %}
-        {% comment %} for (var i = 0;  i < vendorList.length; i++){
-            console.log(i)
-        } {% endcomment %}
-
         row_str = ''
         requestVendorList.forEach(element => {
+            console.log(element)
             row_str += '<form name="addressform">'
             row_str += '    <div class="row align-items-center">'
             row_str += '        <div class="col">'
             row_str += '            <select class="form-control" name="vendor">'
-            row_str +=                 get_vendor_list()
+            row_str +=                 get_vendor_list(element.fields.vendor_pk)
             row_str += '            </select>'
             row_str += '        </div>'
             row_str += '        <div class="col">'
-            row_str += '            <input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">'
+            row_str += '            <input type="text" class="form-control" name="vendor_id" placeholder="ID" value="'+element.fields.vendor_id+'">'
             row_str += '        </div>'
             row_str += '        <div class="col">'
-            row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="">'
+            row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="'+element.fields.vendor_password+'">'
             row_str += '        </div>'
             row_str += '        <div class="col">'
             row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
@@ -473,7 +478,7 @@
             row_str += '</form>'
 
         })
-        var row_str = $("#vendor_area").html()
+        {% comment %} var row_str = $("#vendor_area").html() {% endcomment %}
         $("#vendor_area").append(row_str)
     }
 

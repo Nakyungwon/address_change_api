@@ -17,7 +17,7 @@ from .models import UserInfo, RequestVendor, Vendor
 from django.contrib.auth.models import User
 from django.contrib import auth
 # from .vendor.stragy import *
-from utils.token import JWTToken
+from utils.token import JWTToken, AES128Crypto
 from django.utils.safestring import mark_safe
 # Create your views here.
 JWT_SECRET_KEY = getattr(settings, 'JWT_SECRET_KEY', None)
@@ -67,21 +67,30 @@ def index(req):
         decoded_token = JWTToken.decodeToken(user_token)
         user_id = decoded_token.get('user_id', None)
         # param = req.GET
-        user_info = UserInfo.objects.filter(user_id=user_id).values(
-            'user_id',
-            'user_password',
-            'address',
-            'address_detail',
-            'recipient',
-            'postcode',
-            'shipping_address',
-            'phone_number_head',
-            'phone_number_middle',
-            'phone_number_tail'
-        )[0]
-        context['user_info'] = user_info
-        request_vendor_list = RequestVendor.objects.filter(user_id=user_id)
-        context['request_vendor_list'] = serializers.serialize("json", request_vendor_list)
+        if UserInfo.objects.filter(user_id=user_id).exists():
+            user_info = UserInfo.objects.filter(user_id=user_id).values(
+                'user_id',
+                'user_password',
+                'address',
+                'address_detail',
+                'recipient',
+                'postcode',
+                'shipping_address',
+                'phone_number_head',
+                'phone_number_middle',
+                'phone_number_tail'
+            )[0]
+
+            context['user_info'] = user_info
+            request_vendor_list = RequestVendor.objects.filter(user_id=user_id)
+            cryption_obj = AES128Crypto()
+            for idx, obj in enumerate(request_vendor_list):
+                # obj.vendor_password = 123
+                obj.vendor_password = cryption_obj.decrypt(obj.vendor_password)
+
+            context['request_vendor_list'] = serializers.serialize("json", request_vendor_list)
+        else:
+            context['token_delete'] = 'Y'
         
     return render(
         req,
@@ -99,9 +108,28 @@ def render_signup(req):
 
 def vendor_request(req):
     if req.method == 'POST':
+        cryption_obj = AES128Crypto()
         user_token = req.COOKIES.get('user_token', None)
         decoded_token = JWTToken.decodeToken(user_token)
-        data = QueryDict(req.body)
+        user_id = decoded_token.get('user_id', None)
+        data = json.loads(req.body)
+        vendor_id_list = data['vendor_id']
+        vendor_password_list = list(map(lambda x: cryption_obj.encrypt(x), data['vendor_password']))
+        vendor_list = data['vendor']
+        for i in range(0, len(vendor_id_list)):
+            vendor_id = vendor_id_list[i]
+            vendor_password = vendor_password_list[i]
+            vendor = vendor_list[i]
+            if RequestVendor.objects.filter(user_id=user_id, vendor_pk=vendor).exists():
+                request_vendor_info = RequestVendor.objects.get(user_id=user_id, vendor_pk=vendor)
+            else:
+                request_vendor_info = RequestVendor()
+                request_vendor_info.user_id = user_id
+
+            request_vendor_info.vendor_pk = vendor
+            request_vendor_info.vendor_id = vendor_id
+            request_vendor_info.vendor_password = vendor_password
+            request_vendor_info.save()
         print(data)
 
 

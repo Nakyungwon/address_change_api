@@ -29,7 +29,7 @@ class RequestVendor(models.Model):
         unique_together = (("user_id", "vendor_pk"),)
     # t_task = models.CharField(max_length=100)
     user_id = models.CharField(max_length=100)
-    vendor_pk = models.IntegerField()
+    vendor_pk = models.CharField(max_length=200, null=True)
     vendor_id = models.CharField(max_length=200, null=True)
     vendor_password = models.CharField(max_length=200, null=True)
     created_at = models.DateTimeField(
@@ -38,7 +38,7 @@ class RequestVendor(models.Model):
         auto_now=True, null=True, blank=True)
 
     def __str__(self):
-        return
+        return 
 
 
 class Vendor(models.Model):
