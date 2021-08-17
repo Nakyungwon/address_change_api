@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Address Migration</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notify.min.css' %}">
     <style>
         body{
             margin: 0;
@@ -82,179 +83,100 @@
         <div class="col-sm-14 col-md-10 col-lg-10 mx-auto">
             <div class="card card-signin my-5">
                 <div class="card-body">
-            {% comment %} <di class="row">
-                <label for="exampleInputEmail1">공통계정</label>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="commonId" placeholder="공통ID">
-                </div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="commonPassword" placeholder="공통비번">
-                </div>
-            </di> {% endcomment %}
-						<div class="form-row">
-                            <form id="my_address">
-                                <label for="exampleInputEmail1">주소</label>
-                                <div class="input-group mb-3 ">
-                                    <input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="{% firstof user_info.postcode '' %}" />
-                                    <button class="btn btn-primary form-control" id="postcodify_search_button" onclick="return false;">검색</button>
-                                </div>
-                                
-                                <div class="input-group mb-3">
-                                    <input type="text" id="address" name="address" class="form-control postcodify_address" value="{% firstof user_info.address '' %}" /><br />
-                                </div>
-                                <div class="input-group mb-3">
-                                    <input type="text" id="address_detail" name="address_detail" class="form-control postcodify_details" value="{% firstof user_info.address_detail '' %}" /><br />
-                                </div>
-
-                                {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="inputPassword3">수취인</label>
-                                        <div class="input-group mb-3 row">
-                                            <div class="col">
-                                                <input type="text" class="form-control" name="recipient" id="recipient"  value="{% firstof user_info.recipient '' %}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <label for="inputPassword3">수신지(선택)</label>
-                                        <div class="input-group mb-3 row">
-                                            <div class="col">
-                                                <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="{% firstof user_info.shipping_address '' %}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="inputPassword3">전화번호</label>    
-                                        <div class="input-group mb-3 row">
-                                            <div class="col">
-                                                <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="{% firstof user_info.phone_number_head '' %}">
-                                            </div>
-                                            <span class="text-vertical-center">-</span>
-                                            <div class="col">
-                                                <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="{% firstof user_info.phone_number_middle '' %}">
-                                            </div>
-                                            <span class="text-vertical-center">-</span>
-                                            <div class="col">
-                                                <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="{% firstof user_info.phone_number_tail '' %}">
-                                            </div>
-                                        </div>
-                                    </div>  
-                                </div>
-                                {% if user_info %}
-                                <div>
-                                    <button type="button" class="btn btn-primary btn-block" id="address_save">주소 저장</button>
-                                </div>
-                                {% endif %}
-                            </form>
-							{% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
-                            <div class="row">
-                                <div    class="col input-group mb-3">
-                                    <button class="btn btn-primary form-control" id="add_vendor"> + 계정 추가 </button>
-                                </div> 
+                    <div class="form-row">
+                        <form id="my_address">
+                            <label for="exampleInputEmail1">주소</label>
+                            <div class="input-group mb-3 ">
+                                <input type="text" name="postcode" id="postcode" class="form-control postcodify_postcode5" value="{% firstof user_info.postcode '' %}" />
+                                <button class="btn btn-primary form-control" id="postcodify_search_button" onclick="return false;">검색</button>
                             </div>
-						</div>
-                        <div id="vendor_area">
                             
+                            <div class="input-group mb-3">
+                                <input type="text" id="address" name="address" class="form-control postcodify_address" value="{% firstof user_info.address '' %}" /><br />
+                            </div>
+                            <div class="input-group mb-3">
+                                <input type="text" id="address_detail" name="address_detail" class="form-control postcodify_details" value="{% firstof user_info.address_detail '' %}" /><br />
+                            </div>
+
+                            {% comment %} <label for="inputPassword3">전화번호</label> {% endcomment %}
+                            <div class="row">
+                                <div class="col">
+                                    <label for="inputPassword3">수취인</label>
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="recipient" id="recipient"  value="{% firstof user_info.recipient '' %}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="inputPassword3">수신지(선택)</label>
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="shipping_address" id="shipping_address" value="{% firstof user_info.shipping_address '' %}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <label for="inputPassword3">전화번호</label>    
+                                    <div class="input-group mb-3 row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_head" id="phone_number_head" value="{% firstof user_info.phone_number_head '' %}">
+                                        </div>
+                                        <span class="text-vertical-center">-</span>
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_middle" id="phone_number_middle" value="{% firstof user_info.phone_number_middle '' %}">
+                                        </div>
+                                        <span class="text-vertical-center">-</span>
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="phone_number_tail" id="phone_number_tail" value="{% firstof user_info.phone_number_tail '' %}">
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>
+                            {% if user_info %}
+                            <div>
+                                <button type="button" class="btn btn-primary btn-block" id="address_save">주소 저장</button>
+                            </div>
+                            {% endif %}
+                        </form>
+                        {% comment %} <input type="text" name="" id="extra_info" class="postcodify_details" value="" /><br /> {% endcomment %}
+                        <div class="row">
+                            <div    class="col input-group mb-3">
+                                <button class="btn btn-primary form-control" id="add_vendor"> + 계정 추가 </button>
+                            </div> 
                         </div>
-                        {% if user_info %}
-                        <div>
-                            <button type="button" class="btn btn-primary btn-block" id="account_save">계정 저장</button>
-                        </div>
-                        {% endif %}
+                    </div>
+                    <div id="vendor_area">
+                        
+                    </div>
+                    {% if user_info %}
+                    <div>
+                        <button type="button" class="btn btn-primary btn-block" id="account_save">계정 저장</button>
+                    </div>
+                    {% endif %}
         		</div>
         	</div>
         </div>
     </div>
-
-    <div class="container">
-        <button onclick=websoket()>소켓 연결</button>
-        <button onclick=socketMessage()>소켓 메시지</button>
-        <button onclick=socketDisconnect()>소켓 해제</button>
-    </div>
-
-    {% comment %} <div class="container">
-        <div class="row">
-        <div class="col-sm-9 col-md-7 col-lg-10 mx-auto">
-            <div class="card card-signin my-5">
-            <div class="card-body">
-                <h5 class="card-title text-center">Sign In</h5>
-                <form class="form-signin">
-                <div class="form-label-group">
-                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-                    <label for="inputEmail">Email address</label>
-                </div>
-
-                <div class="form-label-group">
-                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                    <label for="inputPassword">Password</label>
-                </div>
-
-                <div class="custom-control custom-checkbox mb-3">
-                    <input type="checkbox" class="custom-control-input" id="customCheck1">
-                    <label class="custom-control-label" for="customCheck1">Remember password</label>
-                </div>
-                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
-                <hr class="my-4">
-                <button class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i class="fab fa-google mr-2"></i> Sign in with Google</button>
-                <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="submit"><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
-                </form>
-            </div>
-            </div>
-        </div>
-        </div>
-    </div> {% endcomment %}
-    
     {% endblock %}
 </body>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="//d1p7wdleee1q2z.cloudfront.net/post/search.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script type ="text/javascript" src="{% static 'js/cookies.js' %}"> </script>
+<script type ="text/javascript" src="{% static 'js/notify.min.js' %}"> </script>
 <script type="text/javascript">
-    {% comment %} function openAddressPopup(){ {% endcomment %}
-        /*var url = location.href
-        var confmKey = "devU01TX0FVVEgyMDIxMDYxNzAwNDIyMDExMTI5MTE="
-        var resultType = '4'
-        var inputYn = "<?=ADDR['inputYn']?>"
-        if(inputYn != "Y"){
-            document.form.confmKey.value = confmKey;
-            document.form.returnUrl.value = url;
-            document.form.resultType.value = resultType;
-            document.form.action.value = "http://www.juso.go.kr/addrlink/addrLinkUrl.do";
-            document.form.submit()
-        } else {
-            opener.jusoCallBack("<?=$ADDR[roadFullAddr]?>", "<?=$ADDR[roadAddrPart1]?>", "<?=$ADDR[addrDetail]?>")
-            window.close()
-        } */
-        
-    {% comment %} } {% endcomment %}
-    var socket = null
-
+    {% comment %} var socket = null {% endcomment %}
     function websoket(){
-        /*var ws_schema = window.location.protocol == "https:" ? "wss": "ws"
-        var ws_path = ws_schema + "://" + window.location.host + "/sockettest/";
-        console.log("Connecting to" + ws_path)*/
-        var roomName = {{ room_name_json }}
         if ('WebSocket' in window) {
-            //var socket = new WebSocket(ws_path, 'echo')
-            //var socket = new WebSocket(ws_path)
-            //socket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/')
-            socket = new WebSocket('ws://' + window.location.host + '/ws/vendor/')
+            var socket = new WebSocket('ws://' + window.location.host + '/ws/vendor/')
 
             socket.onopen = function(msg){
-                console.log('-------open-----')
-                console.log(msg)
-                console.log('----------------')
             };
             socket.onclose = function(msg){
-                console.log('-------disconnect-----')
-                console.log(msg)
-                console.log('----------------')
             };         
             socket.onerror = function(msg){
-                console.log('-------error-----')
                 console.log(msg)
-                console.log('----------------')
             };
             socket.onmessage = function(e) {
                 var data = JSON.parse(e.data);
@@ -273,6 +195,7 @@
                 }
                 text_obj.text(message)
             };
+
             
             // 웹소켓이 연결되었을때
             /*socket.onopen = function () {
@@ -280,6 +203,7 @@
                     socket.send('Hello ' + i);
                 }
             };*/
+            return socket
         } else {
             console.log('웹소켓 없음')
         }        
@@ -316,9 +240,16 @@
         }
 
     }
-
+    function socketDisconnect1(){
+        setTimeout(function() {
+                console.log('21f12')
+                return 'aaaa'
+        }, 3000);
+    }
     function socketDisconnect(){
-        socket.close()
+        console.log(socketDisconnect1())
+        console.log('sdsdf')
+        {% comment %} socket.close() {% endcomment %}
     }
     function signOut(){
         deleteCookie('user_token')
@@ -329,9 +260,6 @@
         initVendorRequest()
 
         $("#account_save").click(function () {
-            //var vendorRequest = $("#vendor_request")
-            //vendorRequest.submit()
-            // var formData = vendorRequest.serializeArray()
             var object = {}
             var vendor_ids_obj = $("input[name='vendor_id']")
             var vendor_passwords_obj = $("input[name='vendor_password']")
@@ -345,7 +273,6 @@
                 object['vendor'].push(vendors_obj.eq(i).val())
             }
             var json_str_obj = JSON.stringify(object)
-            console.log(json_str_obj)
             $.ajax({
                 type : 'post',
                 url: "{% url 'vendor_request' %}",
@@ -359,7 +286,7 @@
                     alert(error);
                 },
                 success : function(json){
-                    alert(json)
+                    notify('success','계정 저장이 완료되었습니다.','');
                 }
             });
             
@@ -374,8 +301,6 @@
             });
 
             var json_str_obj = JSON.stringify(object)
-            console.log(json_str_obj)
-
             $.ajax({
                 type : 'put',
                 url: "{% url 'update_address' %}",
@@ -386,10 +311,10 @@
                 data : json_str_obj,
                 dataType : 'json',
                 error: function(xhr, status, error){
-                    alert(error);
+                    notify('error','주소 저장이 실패하였습니다.','');
                 },
                 success : function(json){
-                    alert(json)
+                    notify('success','주소 저장이 완료되었습니다.','');
                 }
             });
         })
@@ -406,20 +331,24 @@
         $('#add_vendor').click(function(){
 			var row_str = ''
 			row_str += '<form name="addressform">'
+            row_str += '    <input type="hidden" name="type" value="new" >'
             row_str += '    <div class="row align-items-center">'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-3">'
             row_str += '            <select class="form-control" name="vendor">'
             row_str +=                 get_vendor_list(null)
             row_str += '            </select>'
             row_str += '        </div>'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-3">'
             row_str += '            <input type="text" class="form-control" name="vendor_id" placeholder="ID" value="">'
             row_str += '        </div>'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-3">'
             row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="">'
             row_str += '        </div>'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-2">'
             row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
+            row_str += '        </div>'
+            row_str += '        <div class="col-1">'
+            row_str += '            <button type="button" class="btn btn-danger form-control" onclick="deleteAddress(this)"><b>-</b></button>'
             row_str += '        </div>'
             row_str += '    </div>'
             row_str += '    <div class="tracking">'
@@ -450,25 +379,35 @@
     }
 
     function initVendorRequest() {
+        {% if request_vendor_list %}
         var requestVendorList = {{ request_vendor_list|safe }}
-        row_str = ''
+        {% else %}
+        var requestVendorList = ""
+        {% endif %}
+        if(requestVendorList == ''){
+            return 
+        }
+        var row_str = ""
         requestVendorList.forEach(element => {
-            console.log(element)
             row_str += '<form name="addressform">'
+            row_str += '    <input type="hidden" name="type" value="old" >'
             row_str += '    <div class="row align-items-center">'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-3">'
             row_str += '            <select class="form-control" name="vendor">'
             row_str +=                 get_vendor_list(element.fields.vendor_pk)
             row_str += '            </select>'
             row_str += '        </div>'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-3">'
             row_str += '            <input type="text" class="form-control" name="vendor_id" placeholder="ID" value="'+element.fields.vendor_id+'">'
             row_str += '        </div>'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-3">'
             row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="'+element.fields.vendor_password+'">'
             row_str += '        </div>'
-            row_str += '        <div class="col">'
+            row_str += '        <div class="col-2">'
             row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
+            row_str += '        </div>'
+            row_str += '        <div class="col-1">'
+            row_str += '            <button type="button" class="btn btn-danger form-control" onclick="deleteAddress(this)"><b>-</b></button>'
             row_str += '        </div>'
             row_str += '    </div>'
             row_str += '    <div class="tracking">'
@@ -482,10 +421,48 @@
         $("#vendor_area").append(row_str)
     }
 
-    
+    function deleteAddress(obj){
+        var objForm = obj.closest('form[name=addressform]')
+        var addressFormList = $("form[name=addressform]")
+
+        for(var i = 0; i < addressFormList.length; i ++){
+            if (objForm == addressFormList[i]){
+                formIndex = i
+                break
+            }
+        }
+        var object = {};
+		var formData = addressFormList.eq(formIndex).serializeArray();
+        formData.forEach(function(value, key){
+            object[value['name']] = value['value'];
+        });
+        var json_str_obj = JSON.stringify(object)
+        var type = object['type']
+        if (type == "old"){
+            $.ajax({
+                    type : 'delete',
+                    url: "{% url 'vendor_request' %}",
+                    beforeSend : function(xhr){
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                    },
+                    data : json_str_obj,
+                    dataType : 'json',
+                    error: function(xhr, status, error){
+                        notify('error','삭제 실패!!','');
+                    },
+                    success : function(json){
+                        objForm.remove()
+                    }
+                });
+        } else {
+            objForm.remove()
+        }
+    }
 
 	function changeAddress(obj){
-        objForm= obj.closest('form[name=addressform]')
+        var socket = websoket()
+        objForm = obj.closest('form[name=addressform]')
         formIndex = 0
         var addressFormList = $("form[name=addressform]")
 
@@ -523,33 +500,27 @@
             object
         })
 
-        console.log(json_str_obj)
-        
-        //queryString = queryString+'&postcode='+postcode+'&address='+address+'&details='+details+'&recipient='+recipient+'&shipping_address='+shipping_address+'&phone_number_head='+phone_number_head+'&phone_number_middle='+phone_number_middle+'&phone_number_tail='+phone_number_tail
-        //console.log(queryString)
-        /*socket.send(JSON.stringify({
-            
-            'vendor': 'musinsa'
-        }));*/
-        //socket.send(queryString)
-        socket.send(json_str_obj);
-        {% comment %} $.ajax({
-            type : 'post',
-            url: "{% url 'address' %}",
-            beforeSend : function(xhr){
-                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
-                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-            },
-            data : queryString,
-            dataType : 'json',
-            error: function(xhr, status, error){
-                alert(error);
-            },
-            success : function(json){
-                alert(json)
-            }
-        }); {% endcomment %}
+        wsSend(socket, json_str_obj)
+        // socket.send(json_str_obj);
 	}
+
+    function wsSend(wsSocket, message){
+        waitForConnection(function () {
+            wsSocket.send(message);
+        }, wsSocket, 1000)
+    }
+
+    function waitForConnection (callback, wsSocket, interval){
+        if (wsSocket.readyState === 1) {
+            callback();
+        } else {
+            setTimeout(function () {
+                waitForConnection(callback, wsSocket, interval);
+            }, interval);
+        }
+    }
+
+
 </script>
 </html>
 

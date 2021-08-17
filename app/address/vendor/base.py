@@ -2,7 +2,8 @@ import platform
 from tenacity import retry, stop_after_attempt
 from selenium import webdriver
 from abc import ABC, abstractmethod
-from .helper import delay
+from address.vendor.helper import delay, myassert
+from address.errors.consumer_exceptions import SiteEnterException
 
 
 class Base(ABC):
@@ -29,20 +30,19 @@ class Base(ABC):
             executable_path=Base.chromedriver,
             chrome_options=Base.options)
         self.driver.delete_all_cookies()
-
+    
     # @classmethod
     @delay
     def open_site(self):
-        try:
-            self.driver.get(self.url)
-            return True, '사이트 진입'
-        except Exception:
-            return False, '사이트 진입 실패'
+        self.driver.get(self.url)
+        assert self.url in self.driver.current_url or myassert(SiteEnterException)
+        return True, '사이트 진입'
 
     # @classmethod
     @delay
     def open_address_page(self):
         self.driver.get(self.address_url)
+        assert self.address_url in self.driver.current_url or myassert(SiteEnterException("주소창 진입 실패"))
 
     @retry(stop=stop_after_attempt(3))
     def input_value(self, x_path, value, is_reset=False, is_confirm=True):
@@ -51,7 +51,6 @@ class Base(ABC):
             x_path_element.clear()
         x_path_element.send_keys(value)
         if is_confirm and self.confirm_input_value(x_path_element) != value:
-            print('값이 달라 재시도')
             raise
         else:
             return value
@@ -78,6 +77,11 @@ class Base(ABC):
         self.driver.execute_script(
             "const getParameter = WebGLRenderingContext.getParameter;WebGLRenderingContext.prototype.getParameter = function(parameter) {if (parameter === 37445) {return 'NVIDIA Corporation'} if (parameter === 37446) {return 'NVIDIA GeForce GTX 980 Ti OpenGL Engine';}return getParameter(parameter);};")
 
+    def is_get_cookie(self, key):
+        cookies = self.driver.get_cookies()
+        value = sum(list(map(lambda x: x['name'] == key, cookies)))
+        return value > 0
+        
     @abstractmethod
     def login(self):
         pass

@@ -1,11 +1,15 @@
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from .helper import delay
+from address.vendor.helper import delay, myassert
 from .base import Base
 from tenacity import retry, stop_after_attempt
 import time
 
+from address.errors.consumer_exceptions import LoginException
+# import sys
+# print(sys.path)
+# from address.erros.consumer_exceptions import *
 
 class Auction(Base):
     display_name = '옥션'
@@ -17,22 +21,9 @@ class Auction(Base):
 
     def __init__(
             self,
-            # vendor_id,
-            # vendor_password,
-            # address,
-            # address_detail,
-            # recipient,
-            # shipping_address,
-            # phone_number_head,
-            # phone_number_middle,
-            # phone_number_tail,
             **kward
     ):
         super().__init__(self.url, self.address_url)
-        # print(self.driver)
-        # self.driver = webdriver.Chrome(
-        #     executable_path=Base.chromedriver,
-        #     chrome_options=Base.options)
         # self.driver.delete_all_cookies()
         self.vendor_id = kward['vendor_id']
         self.vendor_password = kward['vendor_password']
@@ -49,6 +40,9 @@ class Auction(Base):
         self.input_value(self.id_x_path, self.vendor_id)
         self.input_value(self.password_x_path, self.vendor_password)
         self.click_button(self.login_button_x_path)
+
+        is_login = super().is_get_cookie('auction')
+        assert is_login is True or myassert(LoginException)
         # assert url == 'https://www.musinsa.com/index.php'
 
     @delay
@@ -128,29 +122,22 @@ class Auction(Base):
         self.click_button(register_button)
 
     def execute_login_page(self):
-        try:
-            self.login()
-            self.open_address_page()
-            return True, '로그인 완료'
-        except Exception:
-            return False, '로그인 실패'
+        self.login()
+        self.open_address_page()
+        return True, "로그인 성공"
 
     def execute_address_page(self):
-        try:
-            self.change_address_base_step()
-            self.open_search_address()
-            self.search_address()
-            self.select_address()
-            self.change_address_last_step()
-            return True, '주소 변경 완료'
-        except Exception:
-            return False, '주소 변경 실패'
+        self.change_address_base_step()
+        self.open_search_address()
+        self.search_address()
+        self.select_address()
+        self.change_address_last_step()
+        return True, "주소변경 성공"
 
     def run(self):
         self.open_site()
         self.execute_login_page()
         self.execute_address_page()
-        pass
 
 
 # if __name__ == "__main__":

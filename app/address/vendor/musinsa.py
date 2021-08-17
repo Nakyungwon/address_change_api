@@ -2,8 +2,9 @@ from .base import Base
 from .helper import delay
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from address.vendor.helper import delay, myassert
 from selenium.webdriver.common.keys import Keys
-
+from address.errors.consumer_exceptions import LoginException, SiteEnterException
 
 class Musinsa(Base):
     display_name = '무신사'
@@ -33,13 +34,13 @@ class Musinsa(Base):
         self.input_value(self.id_x_path, self.vendor_id)
         self.input_value(self.password_x_path, self.vendor_password)
         url = self.click_button(self.login_button_x_path)
-        assert url == 'https://www.musinsa.com/index.php'
+        assert url == 'https://www.musinsa.com/index.php' or myassert(LoginException)
 
     @delay
     def open_search_address(self):
         default_address_check = '/html/body/form/div/table/tbody/tr[5]/td/div[1]/button'
         url = self.click_button(default_address_check)
-        assert url == 'https://store.musinsa.com/app/mypage/delivery_form'
+        assert url == 'https://store.musinsa.com/app/mypage/delivery_form' or myassert(SiteEnterException("주소검색 열기 실패")) 
 
     @delay
     def search_address(self):
@@ -105,23 +106,17 @@ class Musinsa(Base):
         self.click_button(register_button)
 
     def execute_login_page(self):
-        try:
-            self.login()
-            self.open_address_page()
-            return True, '로그인 완료'
-        except Exception:
-            return False, '로그인 실패'
+        self.login()
+        self.open_address_page()
+        return True, '로그인 완료'
 
     def execute_address_page(self):
-        try:
-            self.change_address_base_step()
-            self.open_search_address()
-            self.search_address()
-            self.select_address()
-            self.change_address_last_step()
-            return True, '주소 변경 완료'
-        except Exception:
-            return False, '주소 변경 실패'
+        self.change_address_base_step()
+        self.open_search_address()
+        self.search_address()
+        self.select_address()
+        self.change_address_last_step()
+        return True, '주소 변경 완료'
 
     def run(self):
         self.open_site()

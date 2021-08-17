@@ -15,3 +15,7 @@ def delay(func):
                 start))
         return ret
     return wrapper
+
+
+def myassert(e):
+    raise e

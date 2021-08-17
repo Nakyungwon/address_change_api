@@ -3,49 +3,18 @@ from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 import json
 import time
 import asyncio
+import traceback
 from .vendor.venderFactory import VendorFactory
+from .errors.consumer_exceptions import ConsumerException
+import logging
+logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
-    # def connect(self):
-    #     self.accept()
-
-    # def disconnect(self, close_code):
-    #     pass
-
-    # def receive(self, text_data):
-    #     text_data_json = json.loads(text_data)
-    #     message = text_data_json['message']
-
-    #     self.send(text_data=json.dumps({
-    #         'message': message
-    #     }))
-    # def connect(self):
     async def connect(self):
-        # self.room_name = self.scope['url_route']['kwargs']['room_name']
-        # self.room_group_name = 'chat_%s' % self.room_name
-
-        # Join room group
-        # await async_to_sync(self.channel_layer.group_add)(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
-        # await self.channel_layer.group_add(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Leave room group
-        # await sync_to_sync(self.channel_layer.group_discard)(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
-        # await self.channel_layer.group_discard(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
         pass
 
     # Receive message from WebSocket
@@ -59,74 +28,53 @@ class ChatConsumer(AsyncWebsocketConsumer):
         index = vendor_object['index']
         factory = VendorFactory()
         vendor_obj = factory.getVendor(vendor, **vendor_object)
-        status, message = vendor_obj.open_site()
-        # await self.channel_layer.group_send(
-        #     self.room_group_name,
-        #     {
-        #         'type': 'chat_message',
-        #         'message': message,
-        #         'status': status,
-        #         'index': index
-        #     }
-        # )
-        await self.send(text_data=json.dumps({
-            'message': message,
-            'status': status,
-            'index': index
-        }))
-        await asyncio.sleep(1)
-        status, message = vendor_obj.execute_login_page()
-        if not status:
-            return
-        await self.send(text_data=json.dumps({
-            'message': message,
-            'status': status,
-            'index': index
-        }))
-        await asyncio.sleep(1)
-        status, message = vendor_obj.execute_address_page()
-        if not status:
-            return
-        await self.send(text_data=json.dumps({
-            'message': message,
-            'status': status,
-            'index': index
-        }))
-        await asyncio.sleep(1)
-        if not status:
-            return
-        if status:
+
+        # 사이트 오픈
+        try:
+            status, message = vendor_obj.open_site()
             await self.send(text_data=json.dumps({
-                'message': '변경 성공!',
+                'message': message,
                 'status': status,
                 'index': index
             }))
-        # login
-        # await asyncio.sleep(4)
-        # await asyncio.sleep(5)
-        # await self.send(text_data=json.dumps({
-        #     'message': message,
-        #     'status': status,
-        #     'index': index
-        # }))
-        # status, message = vendor_obj.execute_login_page()
-        # await self.channel_layer.group_send(
-        #     self.room_group_name,
-        #     {
-        #         'type': 'chat_message',
-        #         'message': message,
-        #         'status': status,
-        #         'index': index
-        #     }
-        # )
-
-        # address
-        # finish
-
-        # Send message to room group
+            await asyncio.sleep(1)
+            # 로그인
+            status, message = vendor_obj.execute_login_page()
+            await self.send(text_data=json.dumps({
+                'message': message,
+                'status': status,
+                'index': index
+            }))
+            await asyncio.sleep(1)
+            # 주소 변경
+            status, message = vendor_obj.execute_address_page()
+            await self.send(text_data=json.dumps({
+                'message': message,
+                'status': status,
+                'index': index
+            }))
+            await asyncio.sleep(1)
+            await self.send(text_data=json.dumps({
+                'message': '완료',
+                'status': status,
+                'index': index
+            }))
+        except AssertionError as e:
+            if isinstance(e, ConsumerException):
+                await self.send(text_data=json.dumps({
+                    'message': e.msg,
+                    'status': e.status,
+                    'index': index
+                }))
+        except Exception:
+            logger.error(traceback.format_exc())
+            await self.send(text_data=json.dumps({
+                'message': 'error 발생',
+                'status': False,
+                'index': index
+            }))
 
     # Receive message from room group
-
     async def chat_message(self, event):
         message = event['message']
         status = event['status']
