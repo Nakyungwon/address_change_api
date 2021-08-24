@@ -21,33 +21,18 @@ JWT_SECRET_KEY = getattr(settings, 'JWT_SECRET_KEY', None)
 ALGORITHM = getattr(settings, 'ALGORITHM', None)
 
 
-def bad_request_page(request, exception):
-    response = render(request, 'address/400.html')
-    response.status_code = 400
-    return response
-
-
-def page_not_found_page(request, exception):
-    # response = render_to_response('address/error_404_page.html', {}, context_instance=RequestContext(request))
-    return render(request, 'address/404.html', status=404)
-
-
-def server_error_page(request):
-    # response = render_to_response('address/error_500_page.html', {}, context_instance=RequestContext(request))
-    # response = render(request, 'address/errors/error_500_page.html')
-    response = render(request, 'address/500.html')
-    response.status_code = 500
-    return response
-
-
 def room(request, room_name):
     return render(request, 'address/index.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
     })
 
 
+def health(request):
+    stage = getattr(settings, 'STAGE', None)
+    return HttpResponse(json.dumps({'stage': stage}), content_type='application/json')
+
+
 def index(req):
-    logger.debug('warning !!!!!!!!!!!')
     vendor_list = []
     import_module = importlib.import_module('address.vendor')
     for sub_key, sub_value in import_module.__dict__.items():

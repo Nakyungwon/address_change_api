@@ -10,14 +10,16 @@ services:
         container_name: address_change_api
         ports:
             - '8000:8000'
+            - '8001:8001'
         volumes:
             - ./app:/app
-        command: poetry run gunicorn app.wsgi:application --bind 0.0.0.0:8000
-        # sh -c "python manage.py runserver 0.0.0.0:8000"
+        # command: poetry run gunicorn app.wsgi:application --bind 0.0.0.0:8000 --reload
+        # command: poetry run python manage.py runserver 0.0.0.0:8000
+        # command: poetry run daphne -b 0.0.0.0 -p 8001 app.asgi:application
         depends_on:
             - mysql
-        # networks:
-        #     - backend
+        networks:
+            - backend
 
     nginx:
         image: nginx:latest # nginx 서비스에서 사용할 도커 이미지
@@ -30,8 +32,8 @@ services:
             - ./.static_root/:/static
         depends_on: # 서비스 간의 종속성 표현
             - app
-        # networks:
-        #     - backend
+        networks:
+            - backend
 
     redis:
         image: redis:5
@@ -43,6 +45,9 @@ services:
             - 'mode=standalone'
         ports:
             - '6379:6379'
+        networks:
+            backend:
+                ipv4_address: 172.21.0.2
 
     mysql:
         image: mysql
@@ -56,9 +61,18 @@ services:
         command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
         ports:
             - '3306:3306'
-        # networks:
-        #     - backend
+        networks:
+            backend:
+                ipv4_address: 172.21.0.3
 
+# networks:
+#     backend:
+#         driver: bridge
 networks:
     backend:
         driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.21.0.0/24
+            # gateway: '192.168.0.1'

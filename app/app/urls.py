@@ -28,7 +28,3 @@ urlpatterns = [
     # path('todo/', include('todo.urls')),
     # path('', RedirectView.as_view(url="/address_migration")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-handler400 = 'address.views.bad_request_page'
-handler404 = 'address.views.page_not_found_page'
-handler500 = 'address.views.server_error_page'

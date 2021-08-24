@@ -79,6 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
+ASGI_APPLICATION = 'app.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -152,12 +153,11 @@ STATICFILES_DIRS = (
     # BASE_DIR / "static",
 )
 
-ASGI_APPLICATION = 'app.routing.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [('172.21.0.2', 6379)],
         },
     },
 }
@@ -209,6 +209,14 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'standard',
         },
+        'file_code': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/api.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django': {
@@ -216,7 +224,11 @@ LOGGING = {
             'level': 'INFO',
         },
         'address': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file_code'],
+            'level': 'DEBUG',
+        },
+        'vendor': {
+            'handlers': ['console', 'file_code'],
             'level': 'DEBUG',
         },
         'django.server': {

@@ -8,12 +8,14 @@ from address.errors.consumer_exceptions import SiteEnterException
 
 class Base(ABC):
     # def __init__(self):
-    if platform.system() == 'Darwin':
-        chromedriver = '/usr/local/bin/chromedriver'
-    else:
-        # Todo
-        pass
+    
+    chromedriver = '/usr/local/bin/chromedriver'
     options = webdriver.ChromeOptions()
+    if platform.system() != 'Darwin':
+        options.add_argument('headless')
+        options.add_argument('--no-sandbox')
+        # options.add_argument("--single-process")
+        options.add_argument("--disable-dev-shm-usage")
     options.add_argument('lang=ko_KR')
     options.add_argument('window-size=1920x1080')
     options.add_argument("--disable-gpu")

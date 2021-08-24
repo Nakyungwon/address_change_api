@@ -1,5 +1,7 @@
 from functools import wraps
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 
 def delay(func):
@@ -8,7 +10,7 @@ def delay(func):
         start = time.time()
         ret = func(*args, **kwargs)
         time.sleep(0.4)
-        print(
+        logger.debug(
             '{0}실행 완료! {1:.2f}초 걸림'.format(
                 func.__name__,
                 time.time() -
