@@ -11,5 +11,6 @@ urlpatterns = [
     path("signup", views.signup, name="signup"),
     path("signin", views.signin, name="signin"),
     path("update_address", views.update_address, name="update_address"),
-    path("vendor_request", views.vendor_request, name="vendor_request")
+    path("vendor_request", views.vendor_request, name="vendor_request"),
+    path("check_id", views.check_id, name="check_id"),
 ]

@@ -169,9 +169,8 @@
     {% comment %} var socket = null {% endcomment %}
     function websoket(){
         if ('WebSocket' in window) {
-            // var app_server = window.location.hostname
+            var app_server = window.location.hostname
             // var app_server = window.location.host
-            var app_server = '127.0.0.1'
             var socket = new WebSocket('ws://' + app_server + '/ws/vendor/')
             //var socket = new WebSocket('ws://172.21.0.2/ws/vendor/')
 

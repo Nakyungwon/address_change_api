@@ -5,7 +5,7 @@ run:
 	docker-compose up
 
 build:
-	docker-compose build .
+	docker-compose build
 
 bash:
 	docker container exec -it address_change_api bash

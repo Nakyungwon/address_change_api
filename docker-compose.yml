@@ -10,12 +10,30 @@ services:
         container_name: address_change_api
         ports:
             - '8000:8000'
+        volumes:
+            - ./app:/app
+        command: poetry run gunicorn app.wsgi:application --bind 0.0.0.0:8000 --reload
+        # command: poetry run python manage.py runserver 0.0.0.0:8000
+        # command: poetry run daphne -b 0.0.0.0 -p 8001 app.asgi:application
+        depends_on:
+            - mysql
+        networks:
+            - backend
+
+    daphne:
+        image: address_change_api
+        env_file:
+            - ./django_config/djangoenv
+        build:
+            context: .
+        container_name: daphne_address_change
+        ports:
             - '8001:8001'
         volumes:
             - ./app:/app
         # command: poetry run gunicorn app.wsgi:application --bind 0.0.0.0:8000 --reload
-        # command: poetry run python manage.py runserver 0.0.0.0:8000
-        # command: poetry run daphne -b 0.0.0.0 -p 8001 app.asgi:application
+        # command:/ poetry run python manage.py runserver 0.0.0.0:8000
+        command: poetry run daphne -b 0.0.0.0 -p 8001 app.asgi:application
         depends_on:
             - mysql
         networks:

@@ -84,39 +84,108 @@
 <script src="//d1p7wdleee1q2z.cloudfront.net/post/search.min.js"></script>
 <script type="text/javascript">
     $(function() {
+        $("#user_id").blur(function(e) {
+            var user_id_obj = $(this)
+            validateId(user_id_obj)
+        })
+        $("#user_password").blur(function(e) {
+            var user_password = $(this)
+            validatePassword(user_password)
+        })
+        $("#re_user_password").blur(function(e) {
+            var re_user_password = $(this)
+            var user_password = $("#user_password")
+            validateRePassword(re_user_password, user_password)
+        })
         $("#signup").click(function (){
             var htmlStr = ""
             var user_id_obj= $("#user_id")
-            var user_id = user_id_obj.val()
-            var regType1 = /^[A-Za-z0-9+]*$/;
-            if (user_id.length < 5){
-                InvalidInput(user_id_obj, '아이디는 5자 이상이여야 합니다.')
-                return 
-            } else if(!regType1.test(user_id)){
-                InvalidInput(user_id_obj, '아이디는 영문 숫자만 가능 합니다.')
-                return
-            }else {
-                ValidInput(user_id_obj)
-            }
             var user_password_obj= $("#user_password")
-            var user_password = user_password_obj.val()
-            if (user_password.length < 5){
-                InvalidInput(user_password_obj, '비밀번호는 5자 이상이여야 합니다.')
-                return 
-            } else {
-                ValidInput(user_password_obj)
-            }
             var re_user_password_obj= $("#re_user_password")
-            var re_user_password = re_user_password_obj.val()
-            if (user_password != re_user_password) {
-                InvalidInput(re_user_password_obj, '비밀번호가 다릅니다.')
-            } else {
-                ValidInput(re_user_password_obj)
+            var is_val = false
+            is_val = validateId(user_id_obj)
+            {% comment %} if (! is_val) {
+                return
+            } {% endcomment %}
+            is_val = validatePassword(user_password_obj)
+            is_val = validateRePassword(re_user_password_obj, user_password_obj)
+            if (! is_val) {
+                return
             }
-
+            
             $('.form-signup').submit()
         })
     })
+
+    function validatePassword(user_password_obj){
+        var user_password = user_password_obj.val()
+        if (user_password.length < 5){
+            InvalidInput(user_password_obj, '비밀번호는 5자 이상이여야 합니다.')
+            return false
+        } else {
+            ValidInput(user_password_obj)
+            return true
+        }
+    }
+
+    function validateRePassword(re_user_password_obj, user_password_obj){
+        var re_user_password = re_user_password_obj.val()
+        var user_password = user_password_obj.val()
+        if (re_user_password.length == 0){
+            InvalidInput(re_user_password_obj, '비밀번호 확인은 필수 입니다.')
+            return false
+        }
+
+        if (user_password != re_user_password) {
+            InvalidInput(re_user_password_obj, '비밀번호가 다릅니다.')
+            return false
+        } else {
+            ValidInput(re_user_password_obj)
+            return true
+        }
+    }
+
+    function validateId(user_id_obj){
+        var user_id = user_id_obj.val()
+        var regType1 = /^[A-Za-z0-9+]*$/;
+        
+        if (user_id.length < 5){
+            InvalidInput(user_id_obj, '아이디는 5자 이상이여야 합니다.')
+            return false
+        } else if(! regType1.test(user_id)){
+            InvalidInput(user_id_obj, '아이디는 영문 숫자만 가능 합니다.')
+            return false
+        }
+
+        var object = {}
+        object['user_id'] = user_id
+        var json_str_obj = JSON.stringify(object)
+        var is_valid = false
+
+        $.ajax({
+            type : 'post',
+            url: "{% url 'check_id' %}",
+            beforeSend : function(xhr){
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            },
+            data : json_str_obj,
+            dataType : 'json',
+            error: function(xhr, status, error){
+                alert(error);
+            },
+            success : function(result){
+                if (result.is_user_id){
+                    InvalidInput(user_id_obj, '이미 사용중인 아이디 입니다.')
+                    is_valid = false
+                } else {
+                    ValidInput(user_id_obj)
+                    is_valid = true
+                }        
+            }
+        });
+        return is_valid
+    }
     function InvalidInput(obj, msg){
         obj.removeClass('is-valid')
         obj.addClass('is-invalid')

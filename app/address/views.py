@@ -83,10 +83,16 @@ def index(req):
 
 
 def render_signup(req):
-    context = {
+    return render(req, "auth/signup.html")
 
-    }
-    return render(req, "auth/signup.html", context=context)
+
+def check_id(req):
+    if req.method == 'POST':
+        body = json.loads(req.body)
+        is_user_id = False
+        if UserInfo.objects.filter(user_id=body['user_id']).exists():
+            is_user_id = True
+        return HttpResponse(json.dumps({'is_user_id': is_user_id}), content_type='application/json')
 
 
 def vendor_request(req):
