@@ -23,11 +23,12 @@ class JWTToken:
         except jwt.exceptions.DecodeError:
             print('decode error')
 
+
 class AES128Crypto:
 
     def __init__(self):
         self.BS = AES.block_size
-        ##암호화 키중 16자리만 잘라서 쓴다.
+        # 암호화 키중 16자리만 잘라서 쓴다.
         encrypt_key = getattr(settings, 'CRYPTO_KEY', None)
         self.encrypt_key = encrypt_key[:16].encode(encoding='utf-8', errors='strict')
         self.pad = lambda s: bytes(s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS), 'utf-8')

@@ -2,13 +2,12 @@ from django.shortcuts import render, redirect, reverse
 from django.http import QueryDict, HttpResponse, JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.template import loader, RequestContext
-import json 
-import bcrypt
+import json
+import hashlib
 import abc
 from django.conf import settings
 from django.core import serializers
 import importlib
-import types
 from .models import UserInfo, RequestVendor, Vendor
 from django.contrib.auth.models import User
 from django.contrib import auth
@@ -155,9 +154,10 @@ def signin(req):
     if req.method == 'POST':
         data = QueryDict(req.body)
         password = data['user_password'].encode('utf-8')                # 입력된 패스워드를 바이트 형태로 인코딩
-        password_crypt = bcrypt.hashpw(password, bcrypt.gensalt())  # 암호화된 비밀번호 생성
-        password_crypt = password_crypt.decode('utf-8')
-        if UserInfo.objects.filter(user_id=data['user_id']).exists():
+        # password_crypt = bcrypt.hashpw(password, bcrypt.gensalt())  # 암호화된 비밀번호 생성
+        password_crypt = hashlib.sha256(password).hexdigest()
+        # password_crypt = password_crypt.decode('utf-8')
+        if UserInfo.objects.filter(user_id=data['user_id'], user_password=password_crypt).exists():
             result = UserInfo.objects.\
                 filter(user_id=data['user_id']).\
                 values('user_id', 'address')
@@ -176,14 +176,12 @@ def signup(req):
         if UserInfo.objects.filter(user_id=data['user_id']).exists():
             return HttpResponse(status=400)
         user_obj.user_id = data['user_id']
-
         # ==== 비밀번호 암호화====#
-
-        password = data['user_password'].encode('utf-8')                # 입력된 패스워드를 바이트 형태로 인코딩
-        password_crypt = bcrypt.hashpw(password, bcrypt.gensalt())  # 암호화된 비밀번호 생성
+        password = data['user_password'].encode('utf-8')  # 입력된 패스워드를 바이트 형태로 인코딩
+        password_crypt = hashlib.sha256(password).hexdigest()
+        # password_crypt = bcrypt.hashpw(password, bcrypt.gensalt())  # 암호화된 비밀번호 생성
         # DB에 저장할 수 있는 유니코드 문자열 형태로 디코딩
-        password_crypt = password_crypt.decode('utf-8')
-
+        # password_crypt = password_crypt.decode('utf-8')
         # ====================#
         user_obj.user_password = password_crypt
         user_obj.save()
