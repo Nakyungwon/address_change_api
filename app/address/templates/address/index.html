@@ -145,7 +145,7 @@
                                 <button class="btn btn-primary form-control" id="add_vendor"> + 계정 추가 </button>
                             </div> 
                             <div class="col-4 input-group mb-3">
-                                <button class="btn btn-primary form-control" id="add_vendor"> 전체 주소 변경 </button>
+                                <button class="btn btn-primary form-control" onclick="changeAddressAll()"> 전체 주소 변경 </button>
                             </div> 
                         </div>
                     </div>
@@ -172,18 +172,18 @@
     {% comment %} var socket = null {% endcomment %}
     function websoket(){
         if ('WebSocket' in window) {
-            var app_server = window.location.hostname
-            // var app_server = window.location.host
+            // var app_server = window.location.hostname
+            var app_server = window.location.host
             var socket = new WebSocket('ws://' + app_server + '/ws/vendor/')
             //var socket = new WebSocket('ws://172.21.0.2/ws/vendor/')
 
             socket.onopen = function(msg){
-                console.log(msg)
+                // console.log(msg)
             };
             socket.onclose = function(msg){
             };         
             socket.onerror = function(msg){
-                console.log(msg)
+                // console.log(msg)
             };
             socket.onmessage = function(e) {
                 var data = JSON.parse(e.data);
@@ -352,7 +352,7 @@
             row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="">'
             row_str += '        </div>'
             row_str += '        <div class="col-2">'
-            row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
+            row_str += '            <button type="button" class="btn btn-primary form-control changeAddressButton" onclick="changeAddress(this)">바꾸기</button>'
             row_str += '        </div>'
             row_str += '        <div class="col-1">'
             row_str += '            <button type="button" class="btn btn-danger form-control" onclick="deleteAddress(this)"><b>-</b></button>'
@@ -411,7 +411,7 @@
             row_str += '            <input type="password" class="form-control" name="vendor_password" placeholder="password" value="'+element.fields.vendor_password+'">'
             row_str += '        </div>'
             row_str += '        <div class="col-2">'
-            row_str += '            <button type="button" class="btn btn-primary form-control" onclick="changeAddress(this)">바꾸기</button>'
+            row_str += '            <button type="button" class="btn btn-primary form-control changeAddressButton" onclick="changeAddress(this)">바꾸기</button>'
             row_str += '        </div>'
             row_str += '        <div class="col-1">'
             row_str += '            <button type="button" class="btn btn-danger form-control" onclick="deleteAddress(this)"><b>-</b></button>'
@@ -465,6 +465,14 @@
         } else {
             objForm.remove()
         }
+    }
+
+    function changeAddressAll(){
+        var change_address_buttons = [...$('.changeAddressButton')]
+        change_address_buttons.forEach(obj => {
+            changeAddress(obj)
+        })
+        
     }
 
 	function changeAddress(obj){
